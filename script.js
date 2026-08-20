@@ -53,7 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMiniChart();
   renderHeaderStreak();
   bindEvents();
-  els.gasUrlInput.value = getGasUrl();
+  const savedGasUrl = getGasUrl();
+  if(savedGasUrl){
+    els.gasUrlInput.value = savedGasUrl;
+  } else if(els.gasUrlInput.value.trim()){
+    // a URL was pre-filled directly in the HTML — adopt it as the saved one
+    setGasUrl(els.gasUrlInput.value.trim());
+  }
   goToLevel(firstIncompleteLevelIdx());
 });
 
