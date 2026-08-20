@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeySetu — Ungli Set Karo, Speed Badhao</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">⌨</span>
+    <span class="brand-text">Key<b>Setu</b></span>
+  </div>
+  <div class="topbar-stats">
+    <div class="stat-chip"><span class="stat-val" id="hdrWpm">0</span><span class="stat-lbl">WPM</span></div>
+    <div class="stat-chip"><span class="stat-val" id="hdrAcc">100%</span><span class="stat-lbl">Accuracy</span></div>
+    <div class="stat-chip streak-chip"><span class="stat-val" id="hdrStreak">0</span><span class="stat-lbl">Din Streak</span></div>
+  </div>
+  <button class="icon-btn" id="settingsBtn" title="Google Sheet Connect Karein">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19.14 12.94a7.14 7.14 0 0 0 .06-.94 7.14 7.14 0 0 0-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.3 7.3 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54a7.3 7.3 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.65 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.62-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.32.6.22l2.39-.96c.5.4 1.05.71 1.63.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.58-.23 1.13-.54 1.63-.94l2.39.96c.24.1.46 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/></svg>
+  </button>
+</header>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR: LEVELS -->
+  <aside class="sidebar">
+    <div class="sidebar-head">Roadmap</div>
+    <div class="level-list" id="levelList"></div>
+    <div class="sidebar-foot">
+      <div class="mini-chart-title">Pichhle 7 attempts</div>
+      <div class="mini-chart" id="miniChart"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="workspace">
+
+    <div class="level-header">
+      <div class="level-eyebrow" id="levelEyebrow">STAGE 01</div>
+      <h1 class="level-title" id="levelTitle">Home Row Ki Buniyaad</h1>
+      <p class="level-desc" id="levelDesc">A S D F aur J K L ; — inhi 8 keys par tumhari ungliyan hamesha rahengi.</p>
+    </div>
+
+    <div class="live-stats">
+      <div class="live-stat"><span id="liveWpm">0</span><label>WPM</label></div>
+      <div class="live-stat"><span id="liveAcc">100</span><label>% Accuracy</label></div>
+      <div class="live-stat"><span id="liveTime">0.0s</span><label>Time</label></div>
+      <div class="live-stat"><span id="liveErr">0</span><label>Galtiyan</label></div>
+    </div>
+
+    <div class="type-area" id="typeArea" tabindex="0">
+      <div class="type-text" id="typeText"></div>
+      <div class="type-hint" id="typeHint">Yahan click karke type karna shuru karein</div>
+    </div>
+
+    <div class="finger-callout" id="fingerCallout">
+      <span class="fc-swatch" id="fcSwatch"></span>
+      <span id="fcLabel">Left Index Finger</span>
+      <span class="fc-key" id="fcKey">F</span>
+    </div>
+
+    <div class="keyboard-wrap">
+      <div class="keyboard" id="keyboard"></div>
+      <div class="hands-legend" id="handsLegend"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-ghost" id="restartBtn">↺ Restart Level</button>
+      <button class="btn btn-primary" id="skipBtn">Agla Stage →</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- RESULT MODAL -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal-card">
+    <div class="modal-eyebrow">LEVEL COMPLETE</div>
+    <h2 id="resultTitle">Zabardast!</h2>
+    <div class="result-grid">
+      <div class="result-box"><span id="resWpm">0</span><label>WPM</label></div>
+      <div class="result-box"><span id="resAcc">0%</span><label>Accuracy</label></div>
+      <div class="result-box"><span id="resTime">0s</span><label>Time</label></div>
+      <div class="result-box"><span id="resErr">0</span><label>Galtiyan</label></div>
+    </div>
+    <p class="result-note" id="resultNote"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="retryBtn">Phir Se Try Karein</button>
+      <button class="btn btn-primary" id="nextLevelBtn">Agla Stage →</button>
+    </div>
+    <div class="sync-status" id="syncStatus"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-card settings-card">
+    <div class="modal-eyebrow">GOOGLE SHEET SETUP</div>
+    <h2>Apna Progress Sheet Connect Karein</h2>
+    <p class="settings-copy">
+      Neeche apne Google Apps Script <b>Web App URL</b> ko paste karein. Setup ke steps README.md file mein hain
+      (5 minute ka kaam hai, koi coding nahi).
+    </p>
+    <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/XXXXX/exec" class="text-input">
+    <div class="settings-actions">
+      <button class="btn btn-ghost" id="testConnBtn">Connection Test Karein</button>
+      <button class="btn btn-primary" id="saveGasBtn">Save Karein</button>
+    </div>
+    <div class="conn-status" id="connStatus"></div>
+    <hr class="settings-divider">
+    <button class="btn btn-text" id="closeSettingsBtn">Band Karein</button>
+  </div>
+</div>
+
+<script src="lessons.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
