@@ -48,6 +48,14 @@
       <p class="level-desc" id="levelDesc">A S D F aur J K L ; — inhi 8 keys par tumhari ungliyan hamesha rahengi.</p>
     </div>
 
+    <div class="daily-banner" id="dailyBanner">
+      <span id="dailyBannerText">Naya din! Aaj Stage 1 se revise karo — finger memory pakki hogi, phir apni aakhri progress tak khud pahunch jaoge.</span>
+      <div class="daily-banner-actions">
+        <button class="btn btn-ghost btn-sm" id="jumpFrontierBtn">Seedha Aakhri Progress Par Jao →</button>
+        <button class="banner-close" id="closeBannerBtn">✕</button>
+      </div>
+    </div>
+
     <div class="live-stats">
       <div class="live-stat"><span id="liveWpm">0</span><label>WPM</label></div>
       <div class="live-stat"><span id="liveAcc">100</span><label>% Accuracy</label></div>
@@ -64,6 +72,30 @@
       <span class="fc-swatch" id="fcSwatch"></span>
       <span id="fcLabel">Left Index Finger</span>
       <span class="fc-key" id="fcKey">F</span>
+    </div>
+
+    <div class="hand-diagram" id="handDiagram">
+      <svg viewBox="0 0 420 190" xmlns="http://www.w3.org/2000/svg">
+        <!-- LEFT HAND -->
+        <g class="hand hand-left">
+          <ellipse class="palm" cx="95" cy="150" rx="76" ry="40"/>
+          <rect id="finger-lp" class="finger f-lp" x="34" y="72" width="22" height="66" rx="11"/>
+          <rect id="finger-lr" class="finger f-lr" x="61" y="54" width="22" height="86" rx="11"/>
+          <rect id="finger-lm" class="finger f-lm" x="88" y="44" width="22" height="96" rx="11"/>
+          <rect id="finger-li" class="finger f-li" x="115" y="56" width="22" height="84" rx="11"/>
+          <rect id="thumb-left" class="finger f-th" x="146" y="118" width="20" height="52" rx="10" transform="rotate(38 156 118)"/>
+        </g>
+        <!-- RIGHT HAND -->
+        <g class="hand hand-right">
+          <ellipse class="palm" cx="325" cy="150" rx="76" ry="40"/>
+          <rect id="finger-ri" class="finger f-ri" x="283" y="56" width="22" height="84" rx="11"/>
+          <rect id="finger-rm" class="finger f-rm" x="310" y="44" width="22" height="96" rx="11"/>
+          <rect id="finger-rr" class="finger f-rr" x="337" y="54" width="22" height="86" rx="11"/>
+          <rect id="finger-rp" class="finger f-rp" x="364" y="72" width="22" height="66" rx="11"/>
+          <rect id="thumb-right" class="finger f-th" x="254" y="118" width="20" height="52" rx="10" transform="rotate(-38 264 118)"/>
+        </g>
+      </svg>
+      <div class="hand-diagram-caption">Jo finger glow ho rahi hai, usी se agli key dabao</div>
     </div>
 
     <div class="keyboard-wrap">
@@ -118,6 +150,8 @@
     <button class="btn btn-text" id="closeSettingsBtn">Band Karein</button>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script src="lessons.js"></script>
 <script src="script.js"></script>

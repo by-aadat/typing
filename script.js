@@ -3,6 +3,7 @@
    ============================================================ */
 const STORAGE_KEY = "keysetu_progress_v1";
 const GAS_KEY = "keysetu_gas_url";
+const UNLOCK_WPM = 30; // agla stage isi speed par unlock hota hai (final target 70+ hai)
 
 let state = {
   levelIdx: 0,
@@ -11,8 +12,9 @@ let state = {
   errors: 0,
   startTime: null,
   finished: false,
-  completed: {},   // { levelId: {bestWpm, bestAcc, timesDone} }
-  history: []       // [{date, levelId, wpm, acc, errors, timeTaken}]
+  completed: {},      // { levelId: {bestWpm, bestAcc, timesDone, passed} }
+  history: [],         // [{date, levelId, wpm, acc, errors, timeTaken}]
+  lastPlayedDate: null // yyyy-mm-dd, daily-review reset ke liye
 };
 
 let els = {};
@@ -27,6 +29,7 @@ function loadProgress(){
       const parsed = JSON.parse(raw);
       state.completed = parsed.completed || {};
       state.history = parsed.history || [];
+      state.lastPlayedDate = parsed.lastPlayedDate || null;
     }
   }catch(e){ console.warn("progress load failed", e); }
 }
@@ -34,7 +37,8 @@ function saveProgress(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       completed: state.completed,
-      history: state.history
+      history: state.history,
+      lastPlayedDate: state.lastPlayedDate
     }));
   }catch(e){ console.warn("progress save failed", e); }
 }
@@ -49,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProgress();
   renderKeyboard();
   renderLegend();
-  renderLevelList();
   renderMiniChart();
   renderHeaderStreak();
   bindEvents();
@@ -60,7 +63,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // a URL was pre-filled directly in the HTML — adopt it as the saved one
     setGasUrl(els.gasUrlInput.value.trim());
   }
-  goToLevel(firstIncompleteLevelIdx());
+
+  const todayStr = new Date().toISOString().slice(0,10);
+  const isNewDay = state.lastPlayedDate !== todayStr;
+  const wasReturningUser = !!state.lastPlayedDate;
+  state.lastPlayedDate = todayStr;
+  saveProgress();
+
+  if(isNewDay && wasReturningUser && frontierLevelIdx() > 0){
+    goToLevel(0);
+    els.dailyBanner.classList.add("show");
+  } else {
+    goToLevel(frontierLevelIdx());
+  }
+
+  fetchResumeLevelFromSheet();
 });
 
 function cacheEls(){
@@ -105,6 +122,11 @@ function cacheEls(){
     saveGasBtn: document.getElementById("saveGasBtn"),
     connStatus: document.getElementById("connStatus"),
     closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+    dailyBanner: document.getElementById("dailyBanner"),
+    dailyBannerText: document.getElementById("dailyBannerText"),
+    jumpFrontierBtn: document.getElementById("jumpFrontierBtn"),
+    closeBannerBtn: document.getElementById("closeBannerBtn"),
+    toast: document.getElementById("toast"),
   };
 }
 
@@ -142,8 +164,15 @@ function renderLegend(){
   ).join("");
 }
 
+const FINGER_ELEMENT_IDS = {
+  lp:["finger-lp"], lr:["finger-lr"], lm:["finger-lm"], li:["finger-li"],
+  ri:["finger-ri"], rm:["finger-rm"], rr:["finger-rr"], rp:["finger-rp"],
+  th:["thumb-left","thumb-right"]
+};
+
 function highlightKey(char){
   els.keyboard.querySelectorAll(".key").forEach(k => k.classList.remove("active-target"));
+  document.querySelectorAll(".hand-diagram .finger").forEach(f => f.classList.remove("active"));
   const lookup = char === " " ? "space" : char.toLowerCase();
   const keyEl = els.keyboard.querySelector(`.key[data-key="${cssEscape(lookup)}"]`);
   if(keyEl){
@@ -152,6 +181,10 @@ function highlightKey(char){
     els.fcSwatch.style.background = `var(--f-${finger})`;
     els.fcLabel.textContent = FINGER_NAMES[finger];
     els.fcKey.textContent = lookup === "space" ? "SPACE" : lookup.toUpperCase();
+    (FINGER_ELEMENT_IDS[finger] || []).forEach(id => {
+      const fEl = document.getElementById(id);
+      if(fEl) fEl.classList.add("active");
+    });
   }
 }
 function cssEscape(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
@@ -162,11 +195,12 @@ function cssEscape(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function isLevelUnlocked(idx){
   if(idx === 0) return true;
   const prevId = LEVELS[idx-1].id;
-  return !!state.completed[prevId];
+  return !!(state.completed[prevId] && state.completed[prevId].passed);
 }
-function firstIncompleteLevelIdx(){
+function frontierLevelIdx(){
   for(let i=0;i<LEVELS.length;i++){
-    if(!state.completed[LEVELS[i].id]) return i;
+    const rec = state.completed[LEVELS[i].id];
+    if(!rec || !rec.passed) return i;
   }
   return LEVELS.length - 1;
 }
@@ -174,21 +208,23 @@ function renderLevelList(){
   els.levelList.innerHTML = "";
   LEVELS.forEach((lvl, idx) => {
     const unlocked = isLevelUnlocked(idx);
-    const done = !!state.completed[lvl.id];
+    const rec = state.completed[lvl.id];
+    const passed = !!(rec && rec.passed);
+    const attempted = !!(rec && !rec.passed);
     const item = document.createElement("div");
-    item.className = `level-item ${idx===state.levelIdx?"active":""} ${done?"done":""} ${!unlocked?"locked":""}`;
+    item.className = `level-item ${idx===state.levelIdx?"active":""} ${passed?"done":""} ${attempted?"attempted":""} ${!unlocked?"locked":""}`;
     const numEl = document.createElement("div");
     numEl.className = "level-num";
-    numEl.textContent = done ? "" : String(lvl.id).padStart(2,"0");
+    numEl.textContent = passed ? "" : String(lvl.id).padStart(2,"0");
     const nameEl = document.createElement("div");
     nameEl.className = "level-name";
     nameEl.textContent = lvl.title;
     item.appendChild(numEl);
     item.appendChild(nameEl);
-    if(done){
+    if(rec){
       const bestEl = document.createElement("div");
-      bestEl.className = "level-best";
-      bestEl.textContent = `${state.completed[lvl.id].bestWpm} WPM`;
+      bestEl.className = `level-best ${passed ? "passed" : "not-passed"}`;
+      bestEl.textContent = `${rec.bestWpm} WPM`;
       item.appendChild(bestEl);
     }
     if(unlocked){
@@ -300,12 +336,19 @@ function bindEvents(){
     setGasUrl(els.gasUrlInput.value.trim());
     els.connStatus.textContent = "Saved ✓ ab progress sync hoga.";
     els.connStatus.className = "conn-status ok";
+    fetchResumeLevelFromSheet();
     setTimeout(() => closeModal(els.settingsModal), 900);
   });
 
   [els.resultModal, els.settingsModal].forEach(modal => {
     modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(modal); });
   });
+
+  els.jumpFrontierBtn.addEventListener("click", () => {
+    els.dailyBanner.classList.remove("show");
+    goToLevel(frontierLevelIdx());
+  });
+  els.closeBannerBtn.addEventListener("click", () => els.dailyBanner.classList.remove("show"));
 }
 
 function openModal(m){ m.classList.add("show"); }
@@ -399,11 +442,14 @@ function finishLevel(){
   const lvl = LEVELS[state.levelIdx];
   const prevBest = state.completed[lvl.id];
   const isNewBest = !prevBest || s.wpm > prevBest.bestWpm;
+  const justPassed = s.wpm >= UNLOCK_WPM;
+  const alreadyPassed = !!(prevBest && prevBest.passed);
 
   state.completed[lvl.id] = {
     bestWpm: isNewBest ? s.wpm : prevBest.bestWpm,
     bestAcc: isNewBest ? s.accuracy : prevBest.bestAcc,
-    timesDone: (prevBest ? prevBest.timesDone : 0) + 1
+    timesDone: (prevBest ? prevBest.timesDone : 0) + 1,
+    passed: alreadyPassed || justPassed
   };
 
   const attempt = {
@@ -421,16 +467,27 @@ function finishLevel(){
   renderMiniChart();
   renderHeaderStreak();
 
-  els.resultTitle.textContent = isNewBest ? "Naya Best Score! 🎉" : "Level Complete!";
+  const nowPassed = state.completed[lvl.id].passed;
+  const hasNextLevel = state.levelIdx < LEVELS.length - 1;
+
+  els.resultTitle.textContent = !nowPassed ? "Bas Thoda Aur!" : (isNewBest ? "Naya Best Score! 🎉" : "Level Complete!");
   els.resWpm.textContent = s.wpm;
   els.resAcc.textContent = s.accuracy + "%";
   els.resTime.textContent = Math.round(s.elapsedSec) + "s";
   els.resErr.textContent = s.errors;
-  els.resultNote.textContent = s.accuracy < 85
-    ? "Accuracy thodi kam hai — speed se pehle sahi key dabana zaroori hai. Isi level ko dobara try karo."
-    : (s.wpm < 20 ? "Accuracy achhi hai! Ab dheere dheere finger memory ban rahi hai, speed apne aap badhegi."
-                   : "Bahut badhiya raftaar! Agle stage ke liye taiyaar ho.");
-  els.nextLevelBtn.disabled = state.levelIdx >= LEVELS.length - 1;
+
+  if(!nowPassed){
+    els.resultNote.textContent = `Agla stage unlock karne ke liye ${UNLOCK_WPM}+ WPM chahiye — abhi tumhari speed ${s.wpm} WPM hai. Isi stage ko dobara try karo, accuracy par focus rakho, speed apne aap aayegi.`;
+  } else if(s.accuracy < 85){
+    els.resultNote.textContent = "Speed pass ho gayi, lekin accuracy thodi kam hai — behtar hoga isi stage ko ek baar aur karo taaki galtiyan kam hon.";
+  } else {
+    els.resultNote.textContent = hasNextLevel
+      ? "Bahut badhiya! 30+ WPM paar ho gaya — agla stage unlock ho gaya hai."
+      : "Zabardast! Tumne sabhi stages 30+ WPM par pass kar liye. Ab 70+ WPM tak pahuchne ke liye inhi stages ko dohrate raho.";
+  }
+
+  els.nextLevelBtn.textContent = hasNextLevel ? "Agla Stage →" : "Dobara Practice Karo";
+  els.nextLevelBtn.disabled = !nowPassed && hasNextLevel;
   els.syncStatus.textContent = "";
   openModal(els.resultModal);
 
@@ -483,5 +540,49 @@ async function testGasConnection(){
   }catch(err){
     els.connStatus.textContent = "Connect nahi ho paaya. URL aur deployment access double check karein.";
     els.connStatus.className = "conn-status err";
+  }
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer = null;
+function showToast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => els.toast.classList.remove("show"), 4200);
+}
+
+/* ============================================================
+   SHEET-BASED RESUME OVERRIDE
+   Google Sheet ki "Settings" tab mein "ResumeLevel" cell edit karke
+   koi bhi device seedha uss stage tak pahunch sakta hai.
+   ============================================================ */
+async function fetchResumeLevelFromSheet(){
+  const url = getGasUrl();
+  if(!url) return;
+  try{
+    const res = await fetch(`${url}?action=getSettings`, { method: "GET", mode: "cors" });
+    const data = await res.json();
+    const resumeLevel = parseInt(data.resumeLevel, 10);
+    if(!resumeLevel || resumeLevel < 1 || resumeLevel > LEVELS.length) return;
+
+    const resumeIdx = resumeLevel - 1;
+    if(resumeIdx <= frontierLevelIdx() && isLevelUnlocked(resumeIdx)) return; // already there or behind, nothing to do
+
+    // unlock every level up to (and including) the requested one
+    for(let i=0;i<resumeIdx;i++){
+      const id = LEVELS[i].id;
+      const rec = state.completed[id] || { bestWpm:0, bestAcc:0, timesDone:0 };
+      rec.passed = true;
+      state.completed[id] = rec;
+    }
+    saveProgress();
+    els.dailyBanner.classList.remove("show");
+    goToLevel(resumeIdx);
+    showToast(`Google Sheet ke ResumeLevel ke hisaab se Stage ${resumeLevel} par pahuncha diya ✓`);
+  }catch(err){
+    console.warn("resume-level fetch failed", err);
   }
 }
