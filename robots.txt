@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Replace the host below with your own GitHub Pages or custom domain
+Sitemap: https://example.github.io/gvps-website/sitemap.xml

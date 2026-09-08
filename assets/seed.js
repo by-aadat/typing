@@ -3,10 +3,10 @@
 window.SEED = {
 "school":{
 "name":"Global Vision Public School",
-"motto":"तमसो मा ज्योतिर्गमय",
-"mottoEn":"Lead me from darkness to light",
-"affiliation":"Affiliated to CBSE, New Delhi · Affiliation No. 2730xxx",
-"estd":1998,
+"motto":"सीखो, प्रेरित करो, हासिल करो",
+"mottoEn":"Learn, Inspire, Achieve",
+"affiliation":"Affiliated to CBSE, New Delhi · Affiliation No. 2730456",
+"estd":2024,
 "address":"Plot 14, Sector 9, Rohini, New Delhi – 110085",
 "phone":"011-2755 4400",
 "email":"office@gvps.edu.in",

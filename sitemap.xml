@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Replace https://example.github.io/gvps-website/ with your real address
+  everywhere below, then submit this file in Google Search Console.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://example.github.io/gvps-website/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://example.github.io/gvps-website/#/admission</loc><priority>0.9</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/fees</loc><priority>0.9</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/disclosure</loc><priority>0.9</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/about</loc><priority>0.8</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/academics</loc><priority>0.8</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/campus</loc><priority>0.8</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/faq</loc><priority>0.8</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/contact</loc><priority>0.8</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/transport</loc><priority>0.7</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/studentlife</loc><priority>0.7</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/teachers</loc><priority>0.7</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/news</loc><priority>0.7</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/gallery</loc><priority>0.6</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/downloads</loc><priority>0.6</priority></url>
+  <url><loc>https://example.github.io/gvps-website/#/privacy</loc><priority>0.4</priority></url>
+</urlset>

@@ -190,13 +190,22 @@
   });
 
   /* ================= GALLERY ================= */
-  A.route("/gallery", "Gallery", function () {
+  A.route("/gallery", "Photo gallery", function () {
+    const shots = A.galleryImages();
+    const extra = (D().gallery || []).map((g) => ({ title: g.title, tag: g.tag }));
     return `<div class="shell">
-      ${head("Gallery", "Photographs from assemblies, competitions and the annual day. Replace each tile with a real photograph from your own drive.", "Home · Gallery")}
-      <div class="grid g4">
-        ${D().gallery.map((g) => `<div class="gal"><em>${esc(g.tag)}</em><span>${esc(g.title)}</span></div>`).join("")}
+      ${head("Photo gallery", "Campus, assemblies, competitions and everyday school life.", "Home · Gallery")}
+      <div class="galgrid">
+        ${shots.map((g) => `<figure class="shot"><img src="${esc(g.src)}" alt="${esc(g.title)}" loading="lazy">
+          <figcaption>${esc(g.title)}</figcaption></figure>`).join("")}
       </div>
-      <p class="hint" style="margin-top:18px">To use real pictures, put them in an <code>assets/gallery/</code> folder and swap each tile for <code>&lt;img src="assets/gallery/name.jpg" alt=""&gt;</code>.</p>
+
+      <div class="sec-head" style="margin-top:40px"><h2>Albums to be filled</h2>
+        <p>Drop your event photographs into <code>assets/images/</code> and add them to <code>galleryImages()</code> in <code>assets/app.js</code> — each tile below is a placeholder waiting for pictures.</p></div>
+      <div class="grid g4">
+        ${extra.map((g) => `<div class="gal"><em>${esc(g.tag)}</em><span>${esc(g.title)}</span></div>`).join("")}
+      </div>
+      <a class="btn line sm" style="margin-top:20px" href="#/videos">Video gallery</a>
     </div>`;
   });
 
