@@ -6,7 +6,7 @@
 <title>Lyrical Video Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800;900&family=Bebas+Neue&family=Playfair+Display:ital,wght@1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800;900&family=Montserrat:wght@900&family=Bebas+Neue&family=Anton&family=Bungee&family=Righteous&family=Russo+One&family=Orbitron:wght@900&family=Teko:wght@600&family=Black+Ops+One&family=Bangers&family=Permanent+Marker&family=Kalam:wght@700&family=Pacifico&family=Lobster&family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@1,700&family=Monoton&display=swap">
 <style>
   :root{
     --bg:#0f0d0b; --panel:#1a1714; --line:#2e2924; --fg:#f3ece3; --muted:#a59a8c;
@@ -48,6 +48,16 @@
   .theme small{color:var(--muted);font-size:11.5px;font-weight:500;line-height:1.3}
   .theme[aria-pressed="true"]{border-color:var(--gold);background:#231c13}
   .accent{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+  .fonts{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;max-height:300px;overflow:auto;padding-right:4px}
+  .fchip{background:#14110f;border:2px solid var(--line);border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+  .fchip span{color:var(--fg);line-height:1.2;white-space:nowrap}
+  .fchip small{color:var(--muted);font-size:11px;font-weight:500}
+  .fchip[aria-pressed="true"]{border-color:var(--gold);background:#231c13}
+  .ctrls{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .ctrls label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+  .ctrls label span{color:var(--gold)}
+  select{background:#0c0a09;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font:500 14px var(--display)}
+  input[type=range]{accent-color:var(--gold);width:100%}
   input[type=color]{width:42px;height:30px;border:0;background:none;padding:0;cursor:pointer}
 </style>
 </head>
@@ -81,6 +91,18 @@
     <div class="step">Design</div>
     <div class="themes" id="themes"></div>
     <div class="accent"><label for="accentIn">Highlight colour</label><input id="accentIn" type="color" value="#f2b544"><button id="accentReset" type="button">Reset</button></div>
+    <div class="step">Text style</div>
+    <div class="fonts" id="fonts"></div>
+    <div class="ctrls">
+      <label for="animSel">Animation<select id="animSel"></select></label>
+      <label for="fxSel">Text look<select id="fxSel"></select></label>
+      <label for="posSel">Position<select id="posSel"></select></label>
+      <label for="caseSel">Letters<select id="caseSel"></select></label>
+      <label for="nextSel">Next line dikhaye<select id="nextSel"></select></label>
+      <label for="sizeIn">Size <span id="sizeVal">100%</span><input id="sizeIn" type="range" min="50" max="160" step="5" value="100"></label>
+      <label for="colorIn">Text colour<input id="colorIn" type="color" value="#ffffff"></label>
+    </div>
+    <div class="row"><button id="demoBtn" type="button">▶ Style demo (animation dekhein)</button><button id="styleReset" type="button">Reset text style</button></div>
     <audio id="player" controls></audio>
     <div class="row">
       <button id="previewBtn" class="primary">▶ Preview</button>
@@ -387,65 +409,216 @@ function wrapWords(words,maxW){
   return rows;
 }
 
-/* ================= THEME RENDERERS ================= */
-const R={};
-R.gold=(t,s)=>{
-  drawCover(bgImg,1+0.07*s.tp+0.015*s.bass,0); bottomShade(560,.92);
-  if(s.L){ const {L,N,p,k}=s, y=860+(1-k)*30;
-    ctx.save(); ctx.globalAlpha=k;
-    karaokeLine(L.text,W/2,y,fitSize(L.text,76,900,F_SANS,W-220),F_SANS,900,p,s.accent,.5+.4*s.bass);
-    if(N&&N.t-L.end<2){ setFont(500,fitSize(N.text,40,500,F_SANS,W-220),F_SANS); ctx.fillStyle='rgba(255,255,255,.6)'; ctx.fillText(N.text,W/2,y+95); }
-    ctx.restore(); }
-  bars(1050,56,s.accent);
+/* ================= TEXT STYLE ENGINE ================= */
+const FONTS=[
+  {id:'poppins', name:'Poppins',         fam:'Poppins',          w:900},
+  {id:'montserrat',name:'Montserrat',    fam:'Montserrat',       w:900},
+  {id:'bebas',   name:'Bebas Neue',      fam:'Bebas Neue',       w:400},
+  {id:'anton',   name:'Anton',           fam:'Anton',            w:400},
+  {id:'bungee',  name:'Bungee',          fam:'Bungee',           w:400},
+  {id:'righteous',name:'Righteous',      fam:'Righteous',        w:400},
+  {id:'russo',   name:'Russo One',       fam:'Russo One',        w:400},
+  {id:'orbitron',name:'Orbitron',        fam:'Orbitron',         w:900},
+  {id:'teko',    name:'Teko',            fam:'Teko',             w:600},
+  {id:'blackops',name:'Black Ops',       fam:'Black Ops One',    w:400},
+  {id:'bangers', name:'Bangers',         fam:'Bangers',          w:400},
+  {id:'marker',  name:'Marker',          fam:'Permanent Marker', w:400},
+  {id:'kalam',   name:'Kalam',           fam:'Kalam',            w:700},
+  {id:'pacifico',name:'Pacifico',        fam:'Pacifico',         w:400},
+  {id:'lobster', name:'Lobster',         fam:'Lobster',          w:400},
+  {id:'dancing', name:'Dancing Script',  fam:'Dancing Script',   w:700},
+  {id:'playfair',name:'Playfair Italic', fam:'Playfair Display', w:700, st:'italic'},
+  {id:'monoton', name:'Monoton',         fam:'Monoton',          w:400},
+];
+const FONT_MAP=Object.fromEntries(FONTS.map(f=>[f.id,f]));
+const fontCSS=(f,size)=>`${f.st||'normal'} ${f.w} ${Math.round(size)}px "${f.fam}", Poppins, Arial, sans-serif`;
+
+const ANIMS={fade:'Fade',zoomIn:'Zoom In',zoomOut:'Zoom Out',slideUp:'Slide Up',slideLeft:'Slide Left',blurIn:'Blur In',
+  bounce:'Bounce',beat:'Beat Pulse',typewriter:'Typewriter',wordFade:'Word by word fade',wordPop:'Word Pop',wave:'Wave'};
+const EFFECTS={karaoke:'Karaoke Glow',plain:'Plain',outline:'Outline',neon:'Neon',shadow3d:'3D Shadow',fire:'Fire Gradient',
+  gold:'Gold Metal',stroke:'Thick Stroke',box:'Caption Box'};
+const POS={top:210,center:540,bottom:870};
+
+// each design's own text defaults
+const THEME_TEXT={
+  gold:  {font:'poppins', size:76, pos:'bottom',effect:'karaoke',anim:'slideUp', next:true, upper:false},
+  neon:  {font:'poppins', size:92, pos:'center',effect:'neon',   anim:'fade',    next:true, upper:true},
+  cinema:{font:'playfair',size:68, pos:'bottom',effect:'plain',  anim:'wordFade',next:false,upper:false},
+  pop:   {font:'bebas',   size:118,pos:'center',effect:'stroke', anim:'wordPop', next:false,upper:true},
+  scroll:{font:'poppins', size:52, pos:'center',effect:'plain',  anim:'fade',    next:true, upper:false},
+  circle:{font:'poppins', size:66, pos:'bottom',effect:'karaoke',anim:'slideUp', next:true, upper:false},
 };
-R.neon=(t,s)=>{
+const ui={font:'default',anim:'default',effect:'default',pos:'default',upper:'default',next:'default',size:100,color:'#ffffff'};
+function textOpts(){
+  const d=THEME_TEXT[theme], o={...d};
+  for(const k of ['font','anim','effect','pos']) if(ui[k]!=='default') o[k]=ui[k];
+  if(ui.upper!=='default') o.upper=ui.upper==='on';
+  if(ui.next!=='default') o.next=ui.next==='on';
+  o.size=d.size*ui.size/100; o.color=ui.color;
+  o.f=FONT_MAP[o.font];
+  o.y=theme==='cinema'&&o.pos==='bottom'?H-240:POS[o.pos];
+  return o;
+}
+
+const easeBack=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
+
+// word fx: draws one word at (x,y) [left, middle]; f = sung fraction 0..1
+function wordFx(w,x,y,ww,size,f,o,acc,bass){
+  const base=o.color;
+  const dark=(c)=>{ const n=parseInt(c.slice(1),16); return `rgb(${(n>>16&255)*.35|0},${(n>>8&255)*.35|0},${(n&255)*.35|0})`; };
+  const grad=(stops)=>{ const g=ctx.createLinearGradient(0,y-size*.45,0,y+size*.45); stops.forEach((c,i)=>g.addColorStop(i/(stops.length-1),c)); return g; };
+  const layer=(sung)=>{
+    ctx.save();
+    switch(o.effect){
+      case 'karaoke':
+        ctx.shadowColor=sung?hexA(acc,.5+.4*bass):'rgba(0,0,0,.85)'; ctx.shadowBlur=sung?26:16; ctx.shadowOffsetY=sung?0:4;
+        ctx.fillStyle=sung?acc:base; ctx.fillText(w,x,y); break;
+      case 'plain':
+        ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=14; ctx.shadowOffsetY=3;
+        ctx.fillStyle=sung?acc:base; ctx.fillText(w,x,y); break;
+      case 'outline':
+        ctx.lineJoin='round'; ctx.lineWidth=Math.max(2,size*.045);
+        if(sung){ ctx.shadowColor=hexA(acc,.6); ctx.shadowBlur=18; ctx.fillStyle=acc; ctx.fillText(w,x,y); ctx.shadowBlur=0; ctx.strokeStyle=acc; ctx.strokeText(w,x,y); }
+        else { ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=10; ctx.strokeStyle=base; ctx.strokeText(w,x,y); }
+        break;
+      case 'neon':
+        ctx.lineJoin='round'; ctx.lineWidth=Math.max(2,size*.035);
+        if(sung){ ctx.shadowColor=acc; ctx.shadowBlur=30+30*bass; ctx.fillStyle='#fff'; ctx.fillText(w,x,y);
+          ctx.shadowBlur=60; ctx.fillStyle=hexA(acc,.4); ctx.fillText(w,x,y); }
+        else { ctx.strokeStyle=hexA(acc,.55); ctx.strokeText(w,x,y); }
+        break;
+      case 'shadow3d': {
+        const c=sung?acc:base, d=Math.max(3,size*.07);
+        ctx.fillStyle=dark(c); for(let k=d;k>0;k-=1.5) ctx.fillText(w,x+k*.7,y+k);
+        ctx.fillStyle=c; ctx.fillText(w,x,y); break; }
+      case 'fire':
+        if(sung){ ctx.shadowColor='rgba(255,90,0,.8)'; ctx.shadowBlur=24; ctx.fillStyle=grad(['#fff7a1','#ffb000','#ff3d00']); }
+        else { ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=14; ctx.fillStyle=base; }
+        ctx.fillText(w,x,y); break;
+      case 'gold':
+        ctx.lineJoin='round'; ctx.lineWidth=Math.max(2,size*.05); ctx.strokeStyle='rgba(40,20,0,.9)';
+        ctx.shadowColor='rgba(0,0,0,.7)'; ctx.shadowBlur=12; ctx.shadowOffsetY=4; ctx.strokeText(w,x,y); ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+        ctx.fillStyle=sung?grad(['#fff6c2','#f7c64b','#b06a08','#ffd76a']):grad(['#ffffff','#d8dde3','#8e98a3','#e6eaee']);
+        ctx.fillText(w,x,y); break;
+      case 'stroke':
+        ctx.lineJoin='round'; ctx.lineWidth=Math.max(4,size*.13); ctx.strokeStyle='#000'; ctx.strokeText(w,x,y);
+        ctx.fillStyle=sung?acc:base; ctx.fillText(w,x,y); break;
+      case 'box':
+        if(sung){ const pd=size*.14; ctx.fillStyle=acc; roundRect(x-pd,y-size*.58,ww+pd*2,size*1.16,size*.18); ctx.fill();
+          ctx.fillStyle='#111'; ctx.fillText(w,x,y); }
+        else { ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=14; ctx.fillStyle=base; ctx.fillText(w,x,y); }
+        break;
+    }
+    ctx.restore();
+  };
+  if(f<1) layer(false);
+  if(f>=1) layer(true);
+  else if(f>0){ ctx.save(); ctx.beginPath(); ctx.rect(x-size*.4,y-size*1.2,ww*f+size*.4,size*2.4); ctx.clip(); layer(true); ctx.restore(); }
+}
+
+function layoutLine(text,o){
+  let size=o.size, rows, lh;
+  const maxW=W-220;
+  for(;;){
+    ctx.font=fontCSS(o.f,size);
+    rows=wrapWords(text.split(' ').filter(Boolean),maxW);
+    if(rows.length<=2||size<32) break;
+    size-=3;
+  }
+  lh=size*1.2; ctx.font=fontCSS(o.f,size);
+  const sp=ctx.measureText(' ').width, words=[];
+  let y=o.y-(rows.length-1)*lh/2;
+  const blockBottom=y+(rows.length-1)*lh+size/2+(o.next?size*.55+30:0);
+  if(blockBottom>1000) y-=blockBottom-1000;
+  if(y-size/2<70) y=70+size/2;
+  rows.forEach((row,ri)=>{
+    const ws=row.map(w=>ctx.measureText(w).width), rw=ws.reduce((a,b)=>a+b,0)+sp*(row.length-1);
+    let x=W/2-rw/2;
+    row.forEach((w,i)=>{ words.push({w,x,y:y+ri*lh,ww:ws[i]}); x+=ws[i]+sp; });
+  });
+  return {size,words,bottom:y+(rows.length-1)*lh+size/2};
+}
+
+function drawLyric(t,s,o){
+  if(!s.L) return;
+  const {L,N}=s, acc=s.accent;
+  const text=o.upper?L.text.toUpperCase():L.text;
+  const lay=layoutLine(text,o), size=lay.size, n=lay.words.length, dur=Math.max(.5,L.end-L.t);
+  const tin=(t-L.t+0.25)/0.4, ein=ease(tin), eo=t>L.end?ease((t-L.end)/0.3):0, vis=1-eo;
+  let alpha=ein*vis, sc=1, dx=0, dy=0, blur=0;
+  switch(o.anim){
+    case 'zoomIn':  sc=0.55+0.45*ein+0.35*eo; break;
+    case 'zoomOut': sc=1.6-0.6*ein-0.35*eo; break;
+    case 'slideUp': dy=(1-ein)*45-eo*35; break;
+    case 'slideLeft': dx=(1-ein)*160-eo*160; break;
+    case 'blurIn':  blur=(1-ein)*22+eo*22; break;
+    case 'bounce':  sc=tin<1?0.3+0.7*easeBack(tin):1; sc*=1+0.25*eo; alpha=clamp(tin*3)*vis; break;
+    case 'beat':    sc=1+0.09*s.bass; break;
+    case 'typewriter': case 'wordFade': case 'wordPop': alpha=vis; break;
+  }
+  const cy=(lay.words[0].y+lay.words[n-1].y)/2;
+  ctx.save();
+  ctx.globalAlpha=clamp(alpha);
+  ctx.translate(W/2+dx,cy+dy); ctx.scale(sc,sc); ctx.translate(-W/2,-cy);
+  if(blur>0.3) ctx.filter=`blur(${blur.toFixed(1)}px)`;
+  ctx.font=fontCSS(o.f,size); ctx.textAlign='left'; ctx.textBaseline='middle';
+  const pn=s.p*n, cur=Math.min(n-1,Math.floor(pn));
+  lay.words.forEach((wd,i)=>{
+    const reached=pn>=i||(i===0&&t>=L.t-0.05), age=(pn-i)/n*dur;
+    let wa=1, wsc=1, wdy=0, f=clamp(pn-i);
+    if(o.anim==='typewriter'){ wa=reached?1:0; }
+    else if(o.anim==='wordFade'){ wa=reached?ease(age/0.35):0; wdy=(1-wa)*size*.25; }
+    else if(o.anim==='wordPop'){ wa=reached?1:0; wsc=reached?1+0.4*(1-ease(age/0.2)):1; f=i===cur?1:0; }
+    else if(o.anim==='wave'){ wdy=Math.sin(t*5+i*0.75)*size*.08; }
+    if(wa<=0.01) return;
+    ctx.save(); ctx.globalAlpha*=wa;
+    const cx=wd.x+wd.ww/2;
+    ctx.translate(cx,wd.y+wdy); ctx.scale(wsc,wsc);
+    wordFx(wd.w,-wd.ww/2,0,wd.ww,size,f,o,acc,s.bass);
+    ctx.restore();
+  });
+  ctx.restore();
+  if(o.next&&N&&N.t-L.end<2){
+    const nt=o.upper?N.text.toUpperCase():N.text;
+    let ns=size*.5; ctx.font=fontCSS(o.f,ns);
+    while(ctx.measureText(nt).width>W-220&&ns>20){ ns-=2; ctx.font=fontCSS(o.f,ns); }
+    ctx.save(); ctx.globalAlpha=.6*ein*vis; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=10; ctx.fillStyle=o.color;
+    ctx.fillText(nt,W/2,lay.bottom+ns*.7+22); ctx.restore();
+  }
+}
+
+/* ================= THEME RENDERERS (backgrounds) ================= */
+const R={};
+R.gold=(t,s,o)=>{ drawCover(bgImg,1+0.07*s.tp+0.015*s.bass,0); bottomShade(520,.92); drawLyric(t,s,o); bars(1050,56,s.accent); };
+R.neon=(t,s,o)=>{
   drawCover(bgImg,1.05+0.03*s.bass,.62);
   const v=ctx.createRadialGradient(W/2,H/2,200,W/2,H/2,1100); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.7)');
   ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
-  if(s.L){ const {L,N,p,k}=s, text=L.text.toUpperCase(), size=fitSize(text,96,900,F_SANS,W-260), y=520;
-    ctx.save(); ctx.globalAlpha=k; setFont(900,size,F_SANS); ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.lineWidth=3; ctx.strokeStyle=hexA(s.accent,.55); ctx.strokeText(text,W/2,y);
-    const tw=ctx.measureText(text).width;
-    ctx.save(); ctx.beginPath(); ctx.rect(W/2-tw/2-20,y-size,tw*p+20,size*2); ctx.clip();
-    ctx.shadowColor=s.accent; ctx.shadowBlur=30+30*s.bass; ctx.fillStyle='#fff'; ctx.fillText(text,W/2,y);
-    ctx.shadowBlur=60; ctx.fillStyle=hexA(s.accent,.35); ctx.fillText(text,W/2,y); ctx.restore();
-    if(N&&N.t-L.end<2){ const nt=N.text.toUpperCase(); setFont(700,fitSize(nt,40,700,F_SANS,W-260),F_SANS);
-      ctx.fillStyle='rgba(41,231,255,.6)'; ctx.shadowColor='#29e7ff'; ctx.shadowBlur=14; ctx.fillText(nt,W/2,y+120); }
-    ctx.restore(); }
-  bars(1040,70,s.accent);
+  drawLyric(t,s,o); bars(1040,70,s.accent);
 };
-R.cinema=(t,s)=>{
+R.cinema=(t,s,o)=>{
   drawCover(bgImg,1.02+0.08*s.tp,.35);
   const v=ctx.createRadialGradient(W/2,H/2,300,W/2,H/2,1150); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.75)');
   ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#000'; ctx.fillRect(0,0,W,120); ctx.fillRect(0,H-120,W,120);
-  if(s.L){ const {L,p}=s, out=t>L.end-0.4?clamp((L.end-t)/0.4):1;
-    const size=fitSize(L.text,68,'italic 600',F_SERIF,W-300); setFont('italic 600',size,F_SERIF);
-    const words=L.text.split(' '), sp=ctx.measureText(' ').width, widths=words.map(w=>ctx.measureText(w).width);
-    let x=W/2-(widths.reduce((a,b)=>a+b,0)+sp*(words.length-1))/2; const y=H-230;
-    ctx.textAlign='left'; ctx.textBaseline='middle';
-    words.forEach((w,i)=>{ const a=clamp(p*words.length*1.15-i+0.6)*out;
-      ctx.save(); ctx.globalAlpha=a; ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=14;
-      ctx.fillStyle=s.accent; ctx.fillText(w,x,y+(1-a)*14); ctx.restore(); x+=widths[i]+sp; });
-    ctx.save(); ctx.globalAlpha=.6*out; ctx.fillStyle=s.accent; ctx.fillRect(W/2-40,y+60,80,2); ctx.restore(); }
+  drawLyric(t,s,o);
 };
-R.pop=(t,s)=>{
-  drawCover(bgImg,1.04+0.035*s.bass,.38);
-  if(s.L){ const {L,p}=s, words=L.text.toUpperCase().split(' '), size=118;
-    setFont(400,size,F_BEBAS); const rows=wrapWords(words,W-300);
-    const cur=Math.min(words.length-1,Math.floor(p*words.length)), lh=size*1.02;
-    let idx=0, y0=H/2+80-(rows.length-1)*lh/2;
-    ctx.textBaseline='middle'; ctx.textAlign='left'; ctx.lineJoin='round';
-    rows.forEach((row,ri)=>{ const sp=ctx.measureText(' ').width, rw=row.reduce((a,w)=>a+ctx.measureText(w).width,0)+sp*(row.length-1);
-      let x=W/2-rw/2;
-      row.forEach(w=>{ const ww=ctx.measureText(w).width, wStart=(idx)/words.length, age=(p-wStart)*(L.end-L.t);
-        if(idx<=cur && t>=L.t){ const sc=idx===cur?1+0.25*(1-ease(age/0.18)):1;
-          ctx.save(); ctx.translate(x+ww/2,y0+ri*lh); ctx.scale(sc,sc);
-          ctx.lineWidth=14; ctx.strokeStyle='#000'; ctx.strokeText(w,-ww/2,0);
-          ctx.fillStyle=idx===cur?s.accent:'#fff'; ctx.fillText(w,-ww/2,0); ctx.restore(); }
-        x+=ww+sp; idx++; }); }); }
+R.pop=(t,s,o)=>{ drawCover(bgImg,1.04+0.035*s.bass,.38); drawLyric(t,s,o); };
+R.circle=(t,s,o)=>{
+  if(bgBlur){ ctx.drawImage(bgBlur,0,0,W,H); } else { ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
+  const cx=W/2, cy=400, r=220+14*s.bass, N=96;
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.15);
+  for(let i=0;i<N;i++){ const b=i<N/2?i:N-1-i, v=freq[Math.floor(Math.pow(b/(N/2),1.6)*180)+2]/255, len=6+Math.pow(v,1.4)*100;
+    ctx.rotate(Math.PI*2/N); ctx.fillStyle=hexA(s.accent,.85); ctx.fillRect(-3,-(r+14)-len,6,len); }
+  ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.shadowColor=hexA(s.accent,.7); ctx.shadowBlur=40; ctx.fillStyle='#000'; ctx.fill(); ctx.clip();
+  if(bgImg){ const sc=Math.max(2*r/bgImg.width,2*r/bgImg.height)*1.05; ctx.drawImage(bgImg,cx-bgImg.width*sc/2,cy-bgImg.height*sc/2,bgImg.width*sc,bgImg.height*sc); }
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.lineWidth=6; ctx.strokeStyle=s.accent; ctx.stroke();
+  drawLyric(t,s,{...o, y:o.pos==='bottom'?860:o.y});
 };
-R.scroll=(t,s)=>{
+R.scroll=(t,s,o)=>{
   if(bgBlur){ ctx.drawImage(bgBlur,0,0,W,H); } else { ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
   ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(0,0,W,H);
   const cs=520+12*s.bass, cx=170-6*s.bass, cy=H/2-cs/2;
@@ -454,50 +627,30 @@ R.scroll=(t,s)=>{
     ctx.save(); roundRect(cx,cy,cs,cs,28); ctx.clip();
     const sc=Math.max(cs/bgImg.width,cs/bgImg.height); ctx.drawImage(bgImg,cx+(cs-bgImg.width*sc)/2,cy+(cs-bgImg.height*sc)/2,bgImg.width*sc,bgImg.height*sc); ctx.restore(); }
   const L=s.list, ci=s.ci; if(ci<0) return;
-  const x0=820, maxW=W-x0-110, size=52, rowH=64, gap=34;
-  setFont(800,size,F_SANS); ctx.textAlign='left'; ctx.textBaseline='middle';
+  const x0=820, maxW=W-x0-110, size=o.size, rowH=size*1.23, gap=size*.65;
+  ctx.font=fontCSS(o.f,size); ctx.textAlign='left'; ctx.textBaseline='middle';
+  const txt=i=>o.upper?L[i].text.toUpperCase():L[i].text;
   const lo=Math.max(0,ci-4), hi=Math.min(L.length,ci+5), rows={}, hts={};
-  for(let i=lo;i<hi;i++){ rows[i]=wrapWords(L[i].text.split(' '),maxW).map(r=>r.join(' ')); hts[i]=rows[i].length*rowH; }
-  // top of current block sits at centre; animate up from where it was as "next"
+  for(let i=lo;i<hi;i++){ rows[i]=wrapWords(txt(i).split(' '),maxW).map(r=>r.join(' ')); hts[i]=rows[i].length*rowH; }
   const mv=ease((t-L[ci].t+0.25)/0.45), prevH=ci>lo?hts[ci-1]+gap:0;
-  let y=H/2-hts[ci]/2+(1-mv)*prevH;
-  const ys={}; ys[ci]=y;
-  for(let i=ci+1;i<hi;i++){ ys[i]=ys[i-1]+hts[i-1]+gap; }
-  for(let i=ci-1;i>=lo;i--){ ys[i]=ys[i+1]-gap-hts[i]; }
+  const ys={}; ys[ci]=H/2-hts[ci]/2+(1-mv)*prevH;
+  for(let i=ci+1;i<hi;i++) ys[i]=ys[i-1]+hts[i-1]+gap;
+  for(let i=ci-1;i>=lo;i--) ys[i]=ys[i+1]-gap-hts[i];
   for(let i=lo;i<hi;i++){
     const dist=Math.abs(i-ci), tot=rows[i].reduce((a,r)=>a+ctx.measureText(r).width,0);
     let done=0;
     ctx.save(); ctx.globalAlpha=i===ci?1:clamp(.4-dist*.08,.06);
     rows[i].forEach((r,ri)=>{ const yy=ys[i]+ri*rowH+rowH/2, rw=ctx.measureText(r).width;
-      if(i===ci){
-        ctx.fillStyle='rgba(255,255,255,.38)'; ctx.fillText(r,x0,yy);
-        const fillW=clamp(s.p*tot-done,0,rw);
-        if(fillW>0){ ctx.save(); ctx.beginPath(); ctx.rect(x0-4,yy-rowH,fillW+4,rowH*2); ctx.clip(); ctx.fillStyle=s.accent; ctx.fillText(r,x0,yy); ctx.restore(); }
-      } else { ctx.fillStyle='#fff'; ctx.fillText(r,x0,yy); }
+      if(i===ci){ // unsung part dimmed
+        wordFx(r,x0,yy,rw,size,clamp((s.p*tot-done)/rw),{...o,color:o.color==='#ffffff'?'#8a8a8a':o.color},s.accent,s.bass);
+      } else { ctx.fillStyle=o.color; ctx.fillText(r,x0,yy); }
       done+=rw; });
     ctx.restore();
   }
-  // soft fade at top and bottom edges
   const gt=ctx.createLinearGradient(0,0,0,200); gt.addColorStop(0,'rgba(10,8,6,.95)'); gt.addColorStop(1,'rgba(10,8,6,0)');
   ctx.fillStyle=gt; ctx.fillRect(x0-10,0,W-x0+10,200);
   const gb=ctx.createLinearGradient(0,H-200,0,H); gb.addColorStop(0,'rgba(10,8,6,0)'); gb.addColorStop(1,'rgba(10,8,6,.95)');
   ctx.fillStyle=gb; ctx.fillRect(x0-10,H-200,W-x0+10,200);
-};
-R.circle=(t,s)=>{
-  if(bgBlur){ ctx.drawImage(bgBlur,0,0,W,H); } else { ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
-  const cx=W/2, cy=410, r=230+14*s.bass, N=96;
-  ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.15);
-  for(let i=0;i<N;i++){ const b=i<N/2?i:N-1-i, v=freq[Math.floor(Math.pow(b/(N/2),1.6)*180)+2]/255, len=6+Math.pow(v,1.4)*110;
-    ctx.rotate(Math.PI*2/N); ctx.fillStyle=hexA(s.accent,.85); ctx.fillRect(-3,-(r+14)-len,6,len); }
-  ctx.restore();
-  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.shadowColor=hexA(s.accent,.7); ctx.shadowBlur=40; ctx.fillStyle='#000'; ctx.fill(); ctx.clip();
-  if(bgImg){ const sc=Math.max(2*r/bgImg.width,2*r/bgImg.height)*1.05; ctx.drawImage(bgImg,cx-bgImg.width*sc/2,cy-bgImg.height*sc/2,bgImg.width*sc,bgImg.height*sc); }
-  ctx.restore();
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.lineWidth=6; ctx.strokeStyle=s.accent; ctx.stroke();
-  if(s.L){ const {L,N:Nx,p,k}=s; ctx.save(); ctx.globalAlpha=k;
-    karaokeLine(L.text,W/2,850+(1-k)*24,fitSize(L.text,66,800,F_SANS,W-240),F_SANS,800,p,s.accent,.55);
-    if(Nx&&Nx.t-L.end<2){ setFont(500,fitSize(Nx.text,36,500,F_SANS,W-240),F_SANS); ctx.fillStyle='rgba(255,255,255,.55)'; ctx.fillText(Nx.text,W/2,945); }
-    ctx.restore(); }
 };
 function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
@@ -505,25 +658,72 @@ function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w
 function draw(t,demo){
   const list=demo?DEMO:lines, dur=demo?16:(player.duration||1);
   if(analyser&&!demo) analyser.getByteFrequencyData(freq);
-  else if(demo) for(let i=0;i<freq.length;i++) freq[i]=Math.max(0,200-i*0.7+60*Math.sin(i*0.9));
+  else if(demo) for(let i=0;i<freq.length;i++) freq[i]=clamp(200-i*0.7+60*Math.sin(i*0.9+t*6)*(0.6+0.4*Math.sin(t*9)),0,255);
   let bass=0; for(let i=1;i<8;i++) bass+=freq[i]; bass/=7*255;
   let ci=-1; for(let i=0;i<list.length;i++) if(t>=list[i].t-0.25) ci=i;
-  const s={tp:t/dur,bass,accent:accentIn.value,list,ci,L:null};
+  const s={tp:clamp(t/dur),bass,accent:accentIn.value,list,ci,L:null,p:1};
   if(ci>=0){ const L=list[ci];
-    if(t<=L.end+0.3){ s.L=L; s.N=list[ci+1]; s.p=demo?0.55:progress(L,t);
-      s.k=ease((t-L.t+0.25)/0.35)*(t>L.end?1-ease((t-L.end)/0.3):1); }
-    s.p=s.p??1;
+    if(t<=L.end+0.3){ s.L=L; s.N=list[ci+1]; s.p=demo?clamp((t-L.t)/((L.end-L.t)*0.85)):progress(L,t); }
   }
-  R[theme](t,s);
+  ctx.save(); R[theme](t,s,textOpts()); ctx.restore();
   ctx.fillStyle='rgba(255,255,255,.15)'; ctx.fillRect(0,H-5,W,5);
   ctx.fillStyle=accentIn.value; ctx.fillRect(0,H-5,W*clamp(t/dur),5);
 }
-function redraw(){ const demo=!lines.length; draw(demo?2.2:player.currentTime,demo); }
+let demoT0=null, demoRaf=null;
+function demoLoop(){
+  cancelAnimationFrame(demoRaf);
+  const f=(now)=>{
+    if(lines.length && !demoForce) { demoRaf=null; return; }
+    if(!player.paused || syncing) { demoRaf=null; return; }
+    if(demoT0===null) demoT0=now;
+    const t=((now-demoT0)/1000)%16; draw(t,true);
+    if(demoForce && (now-demoT0)/1000>16){ demoForce=false; demoT0=null; redraw(); return; }
+    demoRaf=requestAnimationFrame(f);
+  };
+  demoRaf=requestAnimationFrame(f);
+}
+let demoForce=false;
+function redraw(){
+  if(!lines.length||demoForce){ if(!demoRaf) demoLoop(); return; }
+  draw(player.currentTime,false);
+}
 let raf=null;
-function loop(){ cancelAnimationFrame(raf); const f=()=>{ draw(player.currentTime,!lines.length); if(!player.paused||syncing) raf=requestAnimationFrame(f); }; f(); }
+function loop(){ cancelAnimationFrame(raf); cancelAnimationFrame(demoRaf); demoRaf=null; demoForce=false; const f=()=>{ draw(player.currentTime,!lines.length); if(!player.paused||syncing) raf=requestAnimationFrame(f); }; f(); }
 player.addEventListener('play',loop);
-player.addEventListener('seeked',redraw);
+player.addEventListener('pause',redraw);
+player.addEventListener('seeked',()=>{ if(player.paused) redraw(); });
 player.addEventListener('loadedmetadata',()=>{parse();redraw();});
+
+/* ================= TEXT STYLE UI ================= */
+const fontsEl=document.getElementById('fonts');
+function addFontChip(id,label,css){
+  const b=document.createElement('button'); b.type='button'; b.className='fchip'; b.dataset.id=id;
+  b.innerHTML=`<span style='font:${css}'>Yaari</span><small>${label}</small>`;
+  b.onclick=()=>{ ui.font=id; markFonts(); if(id!=='default'&&document.fonts) document.fonts.load(fontCSS(FONT_MAP[id],40)).then(redraw).catch(()=>{}); redraw(); };
+  fontsEl.appendChild(b);
+}
+addFontChip('default','Design ka font',"800 26px Poppins, Arial, sans-serif");
+FONTS.forEach(f=>addFontChip(f.id,f.name,fontCSS(f,26).replace(/"/g,"'")));
+function markFonts(){ fontsEl.querySelectorAll('.fchip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===ui.font)); }
+markFonts();
+function fillSelect(id,map,key){
+  const el=document.getElementById(id);
+  el.innerHTML=`<option value="default">Design default</option>`+Object.entries(map).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  el.onchange=()=>{ ui[key]=el.value; redraw(); };
+}
+fillSelect('animSel',ANIMS,'anim'); fillSelect('fxSel',EFFECTS,'effect');
+fillSelect('posSel',{top:'Upar',center:'Beech mein',bottom:'Neeche'},'pos');
+fillSelect('caseSel',{on:'CAPITAL LETTERS',off:'Normal'},'upper');
+fillSelect('nextSel',{on:'Haan',off:'Nahi'},'next');
+const sizeIn=document.getElementById('sizeIn'), sizeVal=document.getElementById('sizeVal');
+sizeIn.oninput=()=>{ ui.size=+sizeIn.value; sizeVal.textContent=sizeIn.value+'%'; redraw(); };
+const colorIn=document.getElementById('colorIn'); colorIn.oninput=()=>{ ui.color=colorIn.value; redraw(); };
+document.getElementById('styleReset').onclick=()=>{
+  Object.assign(ui,{font:'default',anim:'default',effect:'default',pos:'default',upper:'default',next:'default',size:100,color:'#ffffff'});
+  ['animSel','fxSel','posSel','caseSel','nextSel'].forEach(id=>document.getElementById(id).value='default');
+  sizeIn.value=100; sizeVal.textContent='100%'; colorIn.value='#ffffff'; markFonts(); redraw();
+};
+document.getElementById('demoBtn').onclick=()=>{ if(!player.paused) player.pause(); demoForce=true; demoT0=null; cancelAnimationFrame(demoRaf); demoRaf=null; demoLoop(); };
 
 /* ================= PREVIEW / RECORD ================= */
 document.getElementById('previewBtn').onclick=()=>{
@@ -555,7 +755,7 @@ document.getElementById('recBtn').onclick=async()=>{
 document.getElementById('stopBtn').onclick=()=>{ if(syncing) finishSync(); player.pause(); if(recorder&&recorder.state==='recording') recorder.stop(); };
 
 document.fonts&&document.fonts.ready.then(redraw);
-['900 40px Poppins','400 40px "Bebas Neue"','italic 600 40px "Playfair Display"'].forEach(f=>document.fonts&&document.fonts.load(f).then(redraw).catch(()=>{}));
+FONTS.forEach(f=>document.fonts&&document.fonts.load(fontCSS(f,40)).then(()=>{ if(player.paused) redraw(); }).catch(()=>{}));
 redraw();
 </script>
 </body>
