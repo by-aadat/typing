@@ -1,265 +1,562 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Global Vision Public School — CBSE School in Rohini, New Delhi</title>
-<meta name="description" id="metaDesc" content="Global Vision Public School, Sector 9 Rohini, New Delhi. CBSE co-educational school from LKG to Class XII. Admissions 2027–28, fee structure, results, attendance, timetable and mandatory public disclosure.">
-<meta name="keywords" content="CBSE school Rohini, school in Rohini Delhi, LKG admission Delhi, Global Vision Public School, Sector 9 Rohini school, school admission 2027-28">
-<link rel="canonical" href="https://example.github.io/gvps-website/" id="canon">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0F2440">
-
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Global Vision Public School">
-<meta property="og:title" content="Global Vision Public School — CBSE School in Rohini, New Delhi">
-<meta property="og:description" content="Co-educational CBSE school from LKG to Class XII in Sector 9, Rohini. Admissions open for 2027–28.">
-<meta property="og:image" content="assets/og-image.jpg">
-<meta name="twitter:card" content="summary_large_image">
-
+<title>Lyrical Video Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%230F2440'/><text x='50' y='68' font-size='54' font-family='Georgia' fill='%23E8B84B' text-anchor='middle'>G</text></svg>">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "School",
-  "name": "Global Vision Public School",
-  "alternateName": "GVPS Rohini",
-  "description": "Co-educational CBSE school from LKG to Class XII in Sector 9, Rohini, New Delhi.",
-  "foundingDate": "1998",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Plot 14, Sector 9, Rohini",
-    "addressLocality": "New Delhi",
-    "addressRegion": "Delhi",
-    "postalCode": "110085",
-    "addressCountry": "IN"
-  },
-  "telephone": "+91-11-2755-4400",
-  "email": "office@gvps.edu.in",
-  "openingHours": "Mo-Sa 08:00-15:00"
-}
-</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800;900&family=Bebas+Neue&family=Playfair+Display:ital,wght@1,600&display=swap">
+<style>
+  :root{
+    --bg:#0f0d0b; --panel:#1a1714; --line:#2e2924; --fg:#f3ece3; --muted:#a59a8c;
+    --gold:#f2b544; --gold2:#ffd98a; --red:#e2483b; --ok:#5fd38a;
+    --display:"Poppins","Segoe UI",Arial,sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--display);
+       padding:24px max(16px,env(safe-area-inset-left,0px)) 40px max(16px,env(safe-area-inset-right,0px))}
+  h1{font-weight:900;font-size:clamp(24px,4vw,36px);margin:0 0 4px;letter-spacing:-.5px}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .wrap{max-width:1320px;margin:0 auto;display:grid;gap:20px;grid-template-columns:minmax(0,390px) minmax(0,1fr)}
+  @media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+  .step{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+  input[type=file]{width:100%;color:var(--muted)}
+  textarea{width:100%;min-height:260px;background:#0c0a09;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:13px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  button{font:600 14px var(--display);border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#2b2621;color:var(--fg)}
+  button:hover{background:#3a332c}
+  button.primary{background:var(--gold);color:#1a1209}
+  button.primary:hover{background:var(--gold2)}
+  button.rec{background:var(--red);color:#fff}
+  button.auto{background:#2d4a37;color:#d9ffe6}
+  button.auto:hover{background:#38604a}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+  .hint{color:var(--muted);font-size:13px;margin:0}
+  canvas{width:100%;height:auto;aspect-ratio:16/9;background:#000;border-radius:10px;display:block;max-width:100%}
+  .status{font-size:13px;color:var(--muted);min-height:20px}
+  #tapBtn{font-size:18px;padding:16px;background:var(--gold);color:#1a1209;font-weight:800}
+  audio{width:100%}
+  kbd{background:#2b2621;border-radius:4px;padding:1px 6px;font-size:12px}
+  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+  .theme{background:#14110f;border:2px solid var(--line);border-radius:10px;padding:10px;text-align:left;display:flex;flex-direction:column;gap:2px}
+  .theme b{font-size:14px}
+  .theme small{color:var(--muted);font-size:11.5px;font-weight:500;line-height:1.3}
+  .theme[aria-pressed="true"]{border-color:var(--gold);background:#231c13}
+  .accent{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+  input[type=color]{width:42px;height:30px;border:0;background:none;padding:0;cursor:pointer}
+</style>
 </head>
 <body>
+<div style="max-width:1320px;margin:0 auto">
+  <h1>Lyrical <span>Video Maker</span></h1>
+  <p class="sub">MP3 + background image + lyrics → lyric video (MP4/WebM download). Sab kuch aapke browser mein hota hai.</p>
+</div>
+<div class="wrap">
+  <div class="panel">
+    <label class="step" for="audioIn">1 · Song (MP3)</label>
+    <input id="audioIn" type="file" accept="audio/*">
+    <label class="step" for="imgIn">2 · Background image</label>
+    <input id="imgIn" type="file" accept="image/*">
+    <label class="step" for="lyrics">3 · Lyrics</label>
+    <textarea id="lyrics" spellcheck="false" placeholder="Ek line = ek lyric line.&#10;[Chorus] jaise headings apne-aap skip ho jayenge.&#10;Timing ho to: [01:23.40] line text"></textarea>
+    <div class="step">4 · Timing</div>
+    <div class="row">
+      <button id="autoBtn" class="auto">⚡ Auto Sync (beta)</button>
+      <button id="syncBtn">Tap Sync</button>
+      <label class="hint" for="fromLine">from line #</label><input id="fromLine" type="number" min="1" value="1" style="width:64px;background:#0c0a09;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px">
+      <button id="evenBtn">Even spread</button>
+    </div>
+    <p class="hint"><b>Tap Sync</b> (sabse accurate): gaana chalega, har line shuru hote hi <kbd>Space</kbd> dabaiye.<br><b>Auto Sync</b> sirf ek kaccha draft banata hai — kahin-kahin lines 2–8 sec aage-peeche ho sakti hain. Preview mein jahan se galat lage, us line ka number "from line #" mein daal kar Tap Sync dabaiye — sirf wahan se aage ki timing dobara set hogi.</p>
+    <button id="tapBtn" hidden>TAP — next line (Space)</button>
+    <button id="tapDone" hidden>✓ Done (baaki lines purani timing pe)</button>
+  </div>
 
-<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="crest" viewBox="0 0 64 74">
-    <path d="M32 2 60 11v27c0 16-11.5 27-28 34C15.5 65 4 54 4 38V11z" fill="#0F2440" stroke="#B07C22" stroke-width="3"/>
-    <path d="M32 9 53 16v22c0 12.4-8.6 21-21 26.6C19.6 60 11 51.4 11 39V16z" fill="none" stroke="#E8B84B" stroke-width="1.4" opacity=".65"/>
-    <path d="M32 21 46 27 32 33 18 27z" fill="#E8B84B"/>
-    <path d="M22 30v8c0 4 4.6 6.6 10 6.6S42 42 42 38v-8l-10 4.4z" fill="#E8B84B" opacity=".8"/>
-    <path d="M46 27v10" stroke="#E8B84B" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="32" cy="53" r="3" fill="#B07C22"/>
-  </symbol>
-</svg>
-
-<div class="strip">
-  <div class="shell">
-    <span>Session 2026 – 27 &nbsp;·&nbsp; Admission helpline <a href="tel:+919810012345">+91 98100 12345</a></span>
-    <span class="striplinks">
-      <a href="mailto:office@gvps.edu.in">office@gvps.edu.in</a>
-      <span id="sessionChip"><a href="#/login">Login</a></span>
-      <button class="langbtn" id="langBtn">हिंदी</button>
-    </span>
+  <div class="panel">
+    <canvas id="cv" width="1920" height="1080"></canvas>
+    <div class="step">Design</div>
+    <div class="themes" id="themes"></div>
+    <div class="accent"><label for="accentIn">Highlight colour</label><input id="accentIn" type="color" value="#f2b544"><button id="accentReset" type="button">Reset</button></div>
+    <audio id="player" controls></audio>
+    <div class="row">
+      <button id="previewBtn" class="primary">▶ Preview</button>
+      <button id="recBtn" class="rec">● Create Video &amp; Download</button>
+      <button id="stopBtn" disabled>■ Stop</button>
+    </div>
+    <div class="status" id="status">MP3, image aur lyrics daaliye.</div>
   </div>
 </div>
 
-<header class="topbar">
-  <div class="shell" id="topbarShell">
-    <a class="brand" href="#/home">
-      <svg class="crest"><use href="#crest"></use></svg>
-      <span>
-        <b>Global Vision Public School</b>
-        <span>Rohini, New Delhi · LKG to XII · CBSE</span>
-      </span>
-    </a>
+<script>
+const W=1920,H=1080,HOP=0.05;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const player=document.getElementById('player');
+const lyricsEl=document.getElementById('lyrics');
+const statusEl=document.getElementById('status');
+const accentIn=document.getElementById('accentIn');
+const setStatus=s=>statusEl.textContent=s;
 
-    <button class="iconbtn" id="searchBtn" aria-label="Search the website">⌕</button>
-    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><i></i><i></i><i></i></button>
+let bgImg=null, bgBlur=null, audioCtx=null, analyser=null, dest=null;
+let freq=new Uint8Array(512);
+let lines=[];             // {t,end,text}
+let venv=null, vact=null, vcum=null, audioFile=null; // vocal analysis (50ms frames)
+let recorder=null, chunks=[], syncing=false, syncIdx=0, rawLines=[];
 
-    <nav class="nav" id="nav">
-      <a href="#/home">Home</a>
+/* ================= THEMES ================= */
+const THEMES={
+  gold:   {name:'Gold Karaoke', desc:'Neeche bold line, gold fill, beat bars', accent:'#f2b544'},
+  neon:   {name:'Neon Night',   desc:'Beech mein glowing outline text', accent:'#ff2fd0'},
+  cinema: {name:'Cinematic',    desc:'Letterbox, italic serif, word fade', accent:'#e9d8b4'},
+  pop:    {name:'Word Pop',     desc:'Reels style — ek-ek word pop', accent:'#ffe600'},
+  scroll: {name:'Lyrics Scroll',desc:'Cover left, scrolling lines right', accent:'#ffffff'},
+  circle: {name:'Circle Beat',  desc:'Gol photo + circular visualizer', accent:'#3ee0ff'},
+};
+let theme='gold';
+const themesEl=document.getElementById('themes');
+for(const [id,t] of Object.entries(THEMES)){
+  const b=document.createElement('button'); b.type='button'; b.className='theme'; b.dataset.id=id;
+  b.innerHTML=`<b>${t.name}</b><small>${t.desc}</small>`;
+  b.onclick=()=>{theme=id; accentIn.value=t.accent; markTheme(); redraw();};
+  themesEl.appendChild(b);
+}
+function markTheme(){ themesEl.querySelectorAll('.theme').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===theme)); }
+markTheme();
+accentIn.oninput=redraw;
+document.getElementById('accentReset').onclick=()=>{accentIn.value=THEMES[theme].accent; redraw();};
 
-      <div class="more">
-        <button aria-expanded="false">About</button>
-        <div class="menu">
-          <a href="#/about">About the school</a>
-          <a href="#/vision">Vision and mission</a>
-          <a href="#/principal">Principal's message</a>
-          <a href="#/management">Management</a>
-          <a href="#/achievements">Achievements</a>
-        </div>
-      </div>
+/* ================= INPUTS ================= */
+document.getElementById('audioIn').onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  audioFile=f; player.src=URL.createObjectURL(f);
+  setStatus('Song load ho gaya: '+f.name+' — vocals analyse ho rahe hain…');
+  try{ await analyzeVocals(await f.arrayBuffer()); setStatus('Song ready: '+f.name+'. Ab Auto Sync ya Tap Sync karein.'); }
+  catch(err){ venv=null; setStatus('Song load ho gaya (analysis nahi ho paya: '+err.message+'). Tap Sync use karein.'); }
+  parse(); redraw();
+};
+document.getElementById('imgIn').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const im=new Image();
+  im.onload=()=>{
+    bgImg=im;
+    bgBlur=document.createElement('canvas'); bgBlur.width=W/2; bgBlur.height=H/2;
+    const b=bgBlur.getContext('2d'); b.filter='blur(18px) brightness(0.55)';
+    const s=Math.max(W/2/im.width,H/2/im.height)*1.1;
+    b.drawImage(im,(W/2-im.width*s)/2,(H/2-im.height*s)/2,im.width*s,im.height*s);
+    redraw();
+  };
+  im.src=URL.createObjectURL(f);
+};
+lyricsEl.addEventListener('input',()=>{parse();redraw();});
 
-      <div class="more">
-        <button aria-expanded="false">Academics</button>
-        <div class="menu">
-          <a href="#/academics">Academic structure</a>
-          <a href="#/subjects">Subjects</a>
-          <a href="#/timetable">Timetable</a>
-          <a href="#/material">Study material</a>
-          <a href="#/homework">Homework</a>
-          <a href="#/exams">Exams and results</a>
-          <a href="#/calendar">Academic calendar</a>
-          <a href="#/teachers">Faculty</a>
-        </div>
-      </div>
+/* ================= LYRICS PARSING ================= */
+const isHeading=s=>/^\[(intro|verse|chorus|bridge|outro|hook|pre-?chorus|refrain|interlude)[^\]]*\]$/i.test(s);
+const stripTime=s=>s.replace(/^\[\d+:\d+(?:\.\d+)?\]\s*/,'');
+function cleanLines(){ return lyricsEl.value.split('\n').map(s=>s.trim()).filter(s=>s&&!isHeading(s)); }
+const fmt=t=>{const m=Math.floor(t/60), s=(t-m*60).toFixed(2).padStart(5,'0'); return `[${String(m).padStart(2,'0')}:${s}]`;};
+function parse(){
+  lines=[];
+  for(const s of cleanLines()){
+    const m=s.match(/^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)$/);
+    if(m) lines.push({t:+m[1]*60+ +m[2], text:m[3]});
+  }
+  lines.sort((a,b)=>a.t-b.t);
+  const dur=player.duration||1e9;
+  lines.forEach((L,i)=>{
+    const nx=i+1<lines.length?lines[i+1].t:Math.min(L.t+8,dur);
+    let end=nx;
+    if(vact){ // end the line early if the singer stops for a while
+      let f=Math.floor((L.t+1.2)/HOP), quiet=0;
+      for(;f<vact.length && f*HOP<nx;f++){
+        if(!vact[f]){ if(++quiet>=30){ end=Math.min(nx,(f-30)*HOP+0.7); break; } } else quiet=0;
+      }
+    }
+    L.end=Math.max(L.t+1,end);
+  });
+  return lines.length>0;
+}
 
-      <div class="more">
-        <button aria-expanded="false">Admissions</button>
-        <div class="menu">
-          <a href="#/admission">Apply online</a>
-          <a href="#/track">Track an application</a>
-          <a href="#/faq">Frequently asked questions</a>
-          <a href="#/fees">Fee structure</a>
-        </div>
-      </div>
+/* ================= VOCAL ANALYSIS + AUTO SYNC ================= */
+async function analyzeVocals(buf){
+  const tmp=new (window.AudioContext||window.webkitAudioContext)();
+  const ab=await tmp.decodeAudioData(buf); tmp.close();
+  const SR=16000, off=new OfflineAudioContext(2,Math.ceil(ab.duration*SR),SR);
+  const src=off.createBufferSource(); src.buffer=ab;
+  const sp=off.createChannelSplitter(2), mg=off.createChannelMerger(2);
+  src.connect(sp);
+  const stereo=ab.numberOfChannels>1;
+  const g=(v)=>{const n=off.createGain(); n.gain.value=v; return n;};
+  const lm=g(.5), rm=g(stereo?.5:0), ls=g(stereo?.5:0), rs=g(stereo?-.5:0);
+  sp.connect(lm,0); sp.connect(rm,stereo?1:0); sp.connect(ls,0); sp.connect(rs,stereo?1:0);
+  lm.connect(mg,0,0); rm.connect(mg,0,0); ls.connect(mg,0,1); rs.connect(mg,0,1);
+  const hp=off.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=250;
+  const lp=off.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3500;
+  mg.connect(hp); hp.connect(lp); lp.connect(off.destination);
+  src.start();
+  const r=await off.startRendering();
+  const mid=r.getChannelData(0), side=r.getChannelData(1), hop=SR*HOP, n=Math.floor(mid.length/hop);
+  venv=new Float32Array(n);
+  for(let i=0;i<n;i++){
+    let a=0,b=0;
+    for(let j=i*hop;j<(i+1)*hop;j++){a+=mid[j]*mid[j]; b+=side[j]*side[j];}
+    const em=Math.sqrt(a/hop), es=Math.sqrt(b/hop);
+    venv[i]=Math.max(em-0.7*es, em*0.15); // centre-panned energy ≈ vocals
+  }
+  const db=Array.from(venv,v=>20*Math.log10(v+1e-6));
+  const sm=db.map((v,i)=>(db[Math.max(0,i-1)]+v+db[Math.min(n-1,i+1)])/3);
+  const sorted=[...sm].sort((a,b)=>a-b), thr=sorted[Math.floor(n*.92)]-18;
+  vact=new Uint8Array(n); for(let i=0;i<n;i++) vact[i]=sm[i]>thr?1:0;
+  fillRuns(vact,0,6); fillRuns(vact,1,6);
+  vcum=new Float64Array(n+1); for(let i=0;i<n;i++) vcum[i+1]=vcum[i]+(vact[i]?venv[i]:0);
+  venv.sm=sm;
+}
+function fillRuns(a,val,maxLen){ // flip short runs of `val` (gaps or blips)
+  let i=0; while(i<a.length){ let j=i; while(j<a.length&&a[j]===a[i]) j++;
+    if(a[i]===val && j-i<maxLen && i>0 && j<a.length) a.fill(1-val,i,j); i=j; }
+}
+function autoSync(){
+  const ls=cleanLines().map(stripTime);
+  if(!venv){ setStatus('Pehle song daaliye (analysis complete hone dijiye).'); return; }
+  if(!ls.length){ setStatus('Pehle lyrics daaliye.'); return; }
+  const n=vact.length, sm=venv.sm, cands=[];
+  let first=-1, last=0;
+  for(let i=0;i<n;i++){ if(vact[i]){ if(first<0) first=i; last=i; } }
+  if(first<0){ setStatus('Gaane mein vocals detect nahi hue — Tap Sync use karein.'); return; }
+  // phrase starts after a silence = strong candidates
+  for(let i=1;i<n;i++) if(vact[i]&&!vact[i-1]){
+    let g=0; for(let k=i-1;k>=0&&!vact[k];k--) g++;
+    cands.push({f:i,s:100+g});
+  }
+  // dips inside sung parts = weaker candidates
+  for(let i=8;i<n-8;i++){
+    if(!vact[i]) continue;
+    let isMin=true; for(let k=i-8;k<=i+8;k++) if(sm[k]<sm[i]){isMin=false;break;}
+    if(!isMin) continue;
+    let lm=-1e9, rm=-1e9; for(let k=i-10;k<i;k++) lm=Math.max(lm,sm[k]); for(let k=i+1;k<=i+10&&k<n;k++) rm=Math.max(rm,sm[k]);
+    const depth=Math.min(lm,rm)-sm[i];
+    if(depth>3) cands.push({f:i+1,s:depth});
+  }
+  // every 0.25s inside sung parts is also allowed (weak) so DP is never stuck
+  for(let i=first;i<=last;i+=5) if(vact[i]) cands.push({f:i,s:0});
+  cands.push({f:first,s:300});
+  cands.sort((a,b)=>a.f-b.f);
+  const C=[]; for(const c of cands){ const p=C[C.length-1]; if(p&&c.f-p.f<4){ if(c.s>p.s) C[C.length-1]=c; } else C.push(c); }
+  const A=new Float64Array(n+1); for(let i=0;i<n;i++) A[i+1]=A[i]+(vact[i]?HOP:0); // sung seconds
+  const syl=ls.map(x=>Math.max(1,(x.toLowerCase().match(/[aeiouy]+/g)||[]).length));
+  const totS=syl.reduce((a,b)=>a+b,0), totA=A[last+1]-A[first];
+  const exp=syl.map(v=>v/totS*totA);
+  const bonus=c=>c.s>=100?1.6:c.s>0?Math.min(0.9,c.s/8):0;
+  const N=ls.length, M=C.length, INF=1e18;
+  // dp[i][j]: line i starts at candidate j
+  let prev=new Float64Array(M).fill(INF), back=[];
+  let j0=C.findIndex(c=>c.f===first); prev[j0]=0;
+  for(let i=1;i<N;i++){
+    const cur=new Float64Array(M).fill(INF), bk=new Int32Array(M).fill(-1), e=exp[i-1], den=Math.max(e,0.8);
+    for(let j=1;j<M;j++){
+      const fj=C[j].f, bj=bonus(C[j]);
+      for(let k=j-1;k>=0;k--){
+        if(prev[k]>=INF) continue;
+        const d=A[fj]-A[C[k].f];
+        if(d>e*3+4) break;
+        if(fj-C[k].f<12) continue;
+        const r=(d-e)/den, v=prev[k]+r*r-bj;
+        if(v<cur[j]){cur[j]=v;bk[j]=k;}
+      }
+    }
+    back.push(bk); prev=cur;
+  }
+  let best=-1,bv=INF;
+  for(let j=0;j<M;j++){ if(prev[j]>=INF) continue; const d=A[last+1]-A[C[j].f], r=(d-exp[N-1])/Math.max(exp[N-1],0.8), v=prev[j]+r*r; if(v<bv){bv=v;best=j;} }
+  let picks;
+  if(best<0){ picks=ls.map((_,i)=>first+Math.round(i*(last-first)/N)); }
+  else { picks=[C[best].f]; let j=best; for(let i=N-2;i>=0;i--){ j=back[i][j]; picks.unshift(C[j].f); } }
+  lyricsEl.value=ls.map((s,i)=>fmt(picks[i]*HOP)+' '+s).join('\n');
+  parse(); redraw();
+  setStatus(`Auto Sync done: ${ls.length} lines. Preview dekhiye; jo line galat ho uska time lyrics box mein theek kar dijiye.`);
+}
+document.getElementById('autoBtn').onclick=autoSync;
 
-      <div class="more">
-        <button aria-expanded="false">Campus</button>
-        <div class="menu">
-          <a href="#/campus">Infrastructure</a>
-          <a href="#/transport">Transport</a>
-          <a href="#/uniform">Uniform and timings</a>
-          <a href="#/studentlife">Student life</a>
-        </div>
-      </div>
+document.getElementById('evenBtn').onclick=()=>{
+  const ls=cleanLines().map(stripTime), d=player.duration;
+  if(!d||!ls.length){setStatus('Pehle song aur lyrics daaliye.');return;}
+  const start=Math.min(5,d*0.03), end=d-4, step=(end-start)/ls.length;
+  lyricsEl.value=ls.map((s,i)=>fmt(start+i*step)+' '+s).join('\n');
+  parse(); redraw(); setStatus('Lines barabar spread ho gayi.');
+};
 
-      <div class="more">
-        <button aria-expanded="false">School life</button>
-        <div class="menu">
-          <a href="#/events">Events and sports</a>
-          <a href="#/news">News</a>
-          <a href="#/notices">Notice board</a>
-          <a href="#/gallery">Photo gallery</a>
-          <a href="#/videos">Video gallery</a>
-        </div>
-      </div>
+/* ================= TAP SYNC ================= */
+const tapBtn=document.getElementById('tapBtn');
+let syncOld=[];
+document.getElementById('syncBtn').onclick=()=>{
+  rawLines=cleanLines().map(stripTime);
+  if(!player.src||!rawLines.length){setStatus('Pehle song aur lyrics daaliye.');return;}
+  parse(); syncOld=lines.slice();
+  let from=Math.max(1,Math.min(rawLines.length,parseInt(document.getElementById('fromLine').value)||1));
+  if(syncOld.length!==rawLines.length) from=1; // no usable old timing
+  syncIdx=from-1; lines=syncOld.slice(0,syncIdx).map(l=>({...l}));
+  syncing=true; tapBtn.hidden=false; ensureAudio(); audioCtx.resume();
+  player.currentTime=syncIdx>0?Math.max(0,syncOld[syncIdx-1].t):0; player.play();
+  setStatus(`Sync chalu: line ${syncIdx+1} → "${rawLines[syncIdx]}" shuru ho tab TAP karein.`);
+};
+function tap(){
+  if(!syncing) return;
+  lines.push({t:player.currentTime,text:rawLines[syncIdx],end:player.currentTime+6});
+  if(lines.length>1) lines[lines.length-2].end=player.currentTime;
+  syncIdx++;
+  if(syncIdx>=rawLines.length){ finishSync(); return; }
+  setStatus(`Line ${syncIdx+1}/${rawLines.length} → "${rawLines[syncIdx]}"`);
+}
+function finishSync(){
+  syncing=false; tapBtn.hidden=true; player.pause();
+  // lines not tapped yet keep their old timing (if it comes after the last tap)
+  const lastT=lines.length?lines[lines.length-1].t:0;
+  for(let i=lines.length;i<rawLines.length;i++) if(syncOld[i]&&syncOld[i].t>lastT) lines.push({...syncOld[i]});
+  lyricsEl.value=lines.map(l=>fmt(l.t)+' '+l.text).join('\n'); parse();
+  setStatus('Sync complete! Ab Preview ya Create Video dabaiye.');
+}
+tapBtn.onclick=tap;
+const tapDone=document.getElementById('tapDone'); tapDone.onclick=finishSync;
+new MutationObserver(()=>tapDone.hidden=tapBtn.hidden).observe(tapBtn,{attributes:true});
+document.addEventListener('keydown',e=>{ if(syncing&&e.code==='Space'){e.preventDefault();tap();} });
+player.addEventListener('ended',()=>{ if(syncing) finishSync(); if(recorder&&recorder.state==='recording') recorder.stop(); });
 
-      <div class="more">
-        <button aria-expanded="false">Records</button>
-        <div class="menu">
-          <a href="#/students">Student records</a>
-          <a href="#/attendance">Attendance</a>
-          <a href="#/leave">Leave applications</a>
-          <a href="#/idcard">ID cards</a>
-        </div>
-      </div>
+function ensureAudio(){
+  if(audioCtx) return;
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const srcNode=audioCtx.createMediaElementSource(player);
+  analyser=audioCtx.createAnalyser(); analyser.fftSize=1024; analyser.smoothingTimeConstant=.75;
+  dest=audioCtx.createMediaStreamDestination();
+  srcNode.connect(analyser); analyser.connect(audioCtx.destination); srcNode.connect(dest);
+  freq=new Uint8Array(analyser.frequencyBinCount);
+}
 
-      <div class="more">
-        <button aria-expanded="false">More</button>
-        <div class="menu">
-          <a href="#/disclosure">Mandatory public disclosure</a>
-          <a href="#/downloads">Downloads</a>
-          <a href="#/terms">Terms and policies</a>
-          <a href="#/privacy">Privacy policy</a>
-          <a href="#/sitemap">Sitemap</a>
-          <a href="#/contact">Contact</a>
-          <a href="#/login">Login</a>
-          <a href="#/admin">Admin console</a>
-          <a href="#/crm">Admission CRM</a>
-        </div>
-      </div>
+/* ================= DRAW HELPERS ================= */
+const DEMO=[{t:0,end:4,text:'Apne bande, apni toli'},{t:4,end:8,text:'Apni duniya, apni boli'},{t:8,end:12,text:'Jeb mein chahe note hon thode'},{t:12,end:16,text:'Yaar khade toh sapne bade'}];
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>1-Math.pow(1-clamp(x),3);
+function hexA(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;}
+function setFont(w,size,fam){ ctx.font=`${w} ${size}px ${fam}`; }
+const F_SANS='Poppins, "Segoe UI", Arial, sans-serif', F_BEBAS='"Bebas Neue", Impact, "Arial Narrow", sans-serif', F_SERIF='"Playfair Display", Georgia, serif';
+function fitSize(text,max,w,fam,maxW){ let s=max; do{ setFont(w,s,fam); if(ctx.measureText(text).width<=maxW) return s; s-=2; }while(s>24); return s; }
+function progress(L,t){
+  if(vcum){
+    const fa=Math.floor(L.t/HOP), fb=Math.max(fa+1,Math.floor((L.end-0.15)/HOP)), f=Math.floor(t/HOP);
+    const tot=vcum[Math.min(fb,vcum.length-1)]-vcum[Math.min(fa,vcum.length-1)];
+    if(tot>1e-6) return clamp((vcum[clamp(f,fa,vcum.length-1)]-vcum[fa])/tot);
+  }
+  return clamp((t-L.t)/Math.max(0.5,(L.end-L.t)*0.9));
+}
+function drawCover(img,z,dark){
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  if(!img) return;
+  const s=Math.max(W/img.width,H/img.height)*z, w=img.width*s, h=img.height*s;
+  ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+  if(dark){ctx.fillStyle=`rgba(0,0,0,${dark})`; ctx.fillRect(0,0,W,H);}
+}
+function bottomShade(from,alpha){
+  const g=ctx.createLinearGradient(0,from,0,H); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(0,0,0,${alpha})`);
+  ctx.fillStyle=g; ctx.fillRect(0,from,W,H-from);
+}
+function bars(y,maxH,color,mirrorTop){
+  const N=56,bw=10,gap=6,total=N*2*(bw+gap)-gap,sx=(W-total)/2;
+  for(let j=0;j<N*2;j++){
+    const b=j<N?N-1-j:j-N, v=freq[Math.floor(Math.pow(b/N,1.7)*200)+2]/255, h=3+Math.pow(v,1.5)*maxH, edge=Math.abs(j-N)/N;
+    ctx.fillStyle=hexA(color,.9*(1-edge*edge));
+    ctx.fillRect(sx+j*(bw+gap),y-h,bw,h);
+    if(mirrorTop) ctx.fillRect(sx+j*(bw+gap),H-y,bw,h);
+  }
+}
+function karaokeLine(text,x,y,size,fam,w,p,accent,glow,base='#fff'){
+  setFont(w,size,fam); ctx.textAlign='center'; ctx.textBaseline='middle';
+  const tw=ctx.measureText(text).width, x0=x-tw/2;
+  ctx.save(); ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=18; ctx.shadowOffsetY=4;
+  ctx.fillStyle=base; ctx.fillText(text,x,y); ctx.restore();
+  if(p<=0) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0-20,y-size,tw*p+20,size*2); ctx.clip();
+  ctx.shadowColor=hexA(accent,glow); ctx.shadowBlur=26; ctx.fillStyle=accent; ctx.fillText(text,x,y);
+  ctx.restore();
+}
+function wrapWords(words,maxW){
+  const rows=[[]]; let w=0; const sp=ctx.measureText(' ').width;
+  for(const wd of words){ const ww=ctx.measureText(wd).width;
+    if(rows[rows.length-1].length && w+sp+ww>maxW){ rows.push([]); w=0; }
+    rows[rows.length-1].push(wd); w+= (w?sp:0)+ww; }
+  return rows;
+}
 
-      <a class="btn sm navcta" href="#/admission">Apply now</a>
-    </nav>
-  </div>
-</header>
+/* ================= THEME RENDERERS ================= */
+const R={};
+R.gold=(t,s)=>{
+  drawCover(bgImg,1+0.07*s.tp+0.015*s.bass,0); bottomShade(560,.92);
+  if(s.L){ const {L,N,p,k}=s, y=860+(1-k)*30;
+    ctx.save(); ctx.globalAlpha=k;
+    karaokeLine(L.text,W/2,y,fitSize(L.text,76,900,F_SANS,W-220),F_SANS,900,p,s.accent,.5+.4*s.bass);
+    if(N&&N.t-L.end<2){ setFont(500,fitSize(N.text,40,500,F_SANS,W-220),F_SANS); ctx.fillStyle='rgba(255,255,255,.6)'; ctx.fillText(N.text,W/2,y+95); }
+    ctx.restore(); }
+  bars(1050,56,s.accent);
+};
+R.neon=(t,s)=>{
+  drawCover(bgImg,1.05+0.03*s.bass,.62);
+  const v=ctx.createRadialGradient(W/2,H/2,200,W/2,H/2,1100); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.7)');
+  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+  if(s.L){ const {L,N,p,k}=s, text=L.text.toUpperCase(), size=fitSize(text,96,900,F_SANS,W-260), y=520;
+    ctx.save(); ctx.globalAlpha=k; setFont(900,size,F_SANS); ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.lineWidth=3; ctx.strokeStyle=hexA(s.accent,.55); ctx.strokeText(text,W/2,y);
+    const tw=ctx.measureText(text).width;
+    ctx.save(); ctx.beginPath(); ctx.rect(W/2-tw/2-20,y-size,tw*p+20,size*2); ctx.clip();
+    ctx.shadowColor=s.accent; ctx.shadowBlur=30+30*s.bass; ctx.fillStyle='#fff'; ctx.fillText(text,W/2,y);
+    ctx.shadowBlur=60; ctx.fillStyle=hexA(s.accent,.35); ctx.fillText(text,W/2,y); ctx.restore();
+    if(N&&N.t-L.end<2){ const nt=N.text.toUpperCase(); setFont(700,fitSize(nt,40,700,F_SANS,W-260),F_SANS);
+      ctx.fillStyle='rgba(41,231,255,.6)'; ctx.shadowColor='#29e7ff'; ctx.shadowBlur=14; ctx.fillText(nt,W/2,y+120); }
+    ctx.restore(); }
+  bars(1040,70,s.accent);
+};
+R.cinema=(t,s)=>{
+  drawCover(bgImg,1.02+0.08*s.tp,.35);
+  const v=ctx.createRadialGradient(W/2,H/2,300,W/2,H/2,1150); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.75)');
+  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,120); ctx.fillRect(0,H-120,W,120);
+  if(s.L){ const {L,p}=s, out=t>L.end-0.4?clamp((L.end-t)/0.4):1;
+    const size=fitSize(L.text,68,'italic 600',F_SERIF,W-300); setFont('italic 600',size,F_SERIF);
+    const words=L.text.split(' '), sp=ctx.measureText(' ').width, widths=words.map(w=>ctx.measureText(w).width);
+    let x=W/2-(widths.reduce((a,b)=>a+b,0)+sp*(words.length-1))/2; const y=H-230;
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    words.forEach((w,i)=>{ const a=clamp(p*words.length*1.15-i+0.6)*out;
+      ctx.save(); ctx.globalAlpha=a; ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=14;
+      ctx.fillStyle=s.accent; ctx.fillText(w,x,y+(1-a)*14); ctx.restore(); x+=widths[i]+sp; });
+    ctx.save(); ctx.globalAlpha=.6*out; ctx.fillStyle=s.accent; ctx.fillRect(W/2-40,y+60,80,2); ctx.restore(); }
+};
+R.pop=(t,s)=>{
+  drawCover(bgImg,1.04+0.035*s.bass,.38);
+  if(s.L){ const {L,p}=s, words=L.text.toUpperCase().split(' '), size=118;
+    setFont(400,size,F_BEBAS); const rows=wrapWords(words,W-300);
+    const cur=Math.min(words.length-1,Math.floor(p*words.length)), lh=size*1.02;
+    let idx=0, y0=H/2+80-(rows.length-1)*lh/2;
+    ctx.textBaseline='middle'; ctx.textAlign='left'; ctx.lineJoin='round';
+    rows.forEach((row,ri)=>{ const sp=ctx.measureText(' ').width, rw=row.reduce((a,w)=>a+ctx.measureText(w).width,0)+sp*(row.length-1);
+      let x=W/2-rw/2;
+      row.forEach(w=>{ const ww=ctx.measureText(w).width, wStart=(idx)/words.length, age=(p-wStart)*(L.end-L.t);
+        if(idx<=cur && t>=L.t){ const sc=idx===cur?1+0.25*(1-ease(age/0.18)):1;
+          ctx.save(); ctx.translate(x+ww/2,y0+ri*lh); ctx.scale(sc,sc);
+          ctx.lineWidth=14; ctx.strokeStyle='#000'; ctx.strokeText(w,-ww/2,0);
+          ctx.fillStyle=idx===cur?s.accent:'#fff'; ctx.fillText(w,-ww/2,0); ctx.restore(); }
+        x+=ww+sp; idx++; }); }); }
+};
+R.scroll=(t,s)=>{
+  if(bgBlur){ ctx.drawImage(bgBlur,0,0,W,H); } else { ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
+  ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(0,0,W,H);
+  const cs=520+12*s.bass, cx=170-6*s.bass, cy=H/2-cs/2;
+  if(bgImg){ ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=50; ctx.shadowOffsetY=20;
+    roundRect(cx,cy,cs,cs,28); ctx.fillStyle='#000'; ctx.fill(); ctx.restore();
+    ctx.save(); roundRect(cx,cy,cs,cs,28); ctx.clip();
+    const sc=Math.max(cs/bgImg.width,cs/bgImg.height); ctx.drawImage(bgImg,cx+(cs-bgImg.width*sc)/2,cy+(cs-bgImg.height*sc)/2,bgImg.width*sc,bgImg.height*sc); ctx.restore(); }
+  const L=s.list, ci=s.ci; if(ci<0) return;
+  const x0=820, maxW=W-x0-110, size=52, rowH=64, gap=34;
+  setFont(800,size,F_SANS); ctx.textAlign='left'; ctx.textBaseline='middle';
+  const lo=Math.max(0,ci-4), hi=Math.min(L.length,ci+5), rows={}, hts={};
+  for(let i=lo;i<hi;i++){ rows[i]=wrapWords(L[i].text.split(' '),maxW).map(r=>r.join(' ')); hts[i]=rows[i].length*rowH; }
+  // top of current block sits at centre; animate up from where it was as "next"
+  const mv=ease((t-L[ci].t+0.25)/0.45), prevH=ci>lo?hts[ci-1]+gap:0;
+  let y=H/2-hts[ci]/2+(1-mv)*prevH;
+  const ys={}; ys[ci]=y;
+  for(let i=ci+1;i<hi;i++){ ys[i]=ys[i-1]+hts[i-1]+gap; }
+  for(let i=ci-1;i>=lo;i--){ ys[i]=ys[i+1]-gap-hts[i]; }
+  for(let i=lo;i<hi;i++){
+    const dist=Math.abs(i-ci), tot=rows[i].reduce((a,r)=>a+ctx.measureText(r).width,0);
+    let done=0;
+    ctx.save(); ctx.globalAlpha=i===ci?1:clamp(.4-dist*.08,.06);
+    rows[i].forEach((r,ri)=>{ const yy=ys[i]+ri*rowH+rowH/2, rw=ctx.measureText(r).width;
+      if(i===ci){
+        ctx.fillStyle='rgba(255,255,255,.38)'; ctx.fillText(r,x0,yy);
+        const fillW=clamp(s.p*tot-done,0,rw);
+        if(fillW>0){ ctx.save(); ctx.beginPath(); ctx.rect(x0-4,yy-rowH,fillW+4,rowH*2); ctx.clip(); ctx.fillStyle=s.accent; ctx.fillText(r,x0,yy); ctx.restore(); }
+      } else { ctx.fillStyle='#fff'; ctx.fillText(r,x0,yy); }
+      done+=rw; });
+    ctx.restore();
+  }
+  // soft fade at top and bottom edges
+  const gt=ctx.createLinearGradient(0,0,0,200); gt.addColorStop(0,'rgba(10,8,6,.95)'); gt.addColorStop(1,'rgba(10,8,6,0)');
+  ctx.fillStyle=gt; ctx.fillRect(x0-10,0,W-x0+10,200);
+  const gb=ctx.createLinearGradient(0,H-200,0,H); gb.addColorStop(0,'rgba(10,8,6,0)'); gb.addColorStop(1,'rgba(10,8,6,.95)');
+  ctx.fillStyle=gb; ctx.fillRect(x0-10,H-200,W-x0+10,200);
+};
+R.circle=(t,s)=>{
+  if(bgBlur){ ctx.drawImage(bgBlur,0,0,W,H); } else { ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
+  const cx=W/2, cy=410, r=230+14*s.bass, N=96;
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.15);
+  for(let i=0;i<N;i++){ const b=i<N/2?i:N-1-i, v=freq[Math.floor(Math.pow(b/(N/2),1.6)*180)+2]/255, len=6+Math.pow(v,1.4)*110;
+    ctx.rotate(Math.PI*2/N); ctx.fillStyle=hexA(s.accent,.85); ctx.fillRect(-3,-(r+14)-len,6,len); }
+  ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.shadowColor=hexA(s.accent,.7); ctx.shadowBlur=40; ctx.fillStyle='#000'; ctx.fill(); ctx.clip();
+  if(bgImg){ const sc=Math.max(2*r/bgImg.width,2*r/bgImg.height)*1.05; ctx.drawImage(bgImg,cx-bgImg.width*sc/2,cy-bgImg.height*sc/2,bgImg.width*sc,bgImg.height*sc); }
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.lineWidth=6; ctx.strokeStyle=s.accent; ctx.stroke();
+  if(s.L){ const {L,N:Nx,p,k}=s; ctx.save(); ctx.globalAlpha=k;
+    karaokeLine(L.text,W/2,850+(1-k)*24,fitSize(L.text,66,800,F_SANS,W-240),F_SANS,800,p,s.accent,.55);
+    if(Nx&&Nx.t-L.end<2){ setFont(500,fitSize(Nx.text,36,500,F_SANS,W-240),F_SANS); ctx.fillStyle='rgba(255,255,255,.55)'; ctx.fillText(Nx.text,W/2,945); }
+    ctx.restore(); }
+};
+function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
-<main id="main"></main>
+/* ================= FRAME ================= */
+function draw(t,demo){
+  const list=demo?DEMO:lines, dur=demo?16:(player.duration||1);
+  if(analyser&&!demo) analyser.getByteFrequencyData(freq);
+  else if(demo) for(let i=0;i<freq.length;i++) freq[i]=Math.max(0,200-i*0.7+60*Math.sin(i*0.9));
+  let bass=0; for(let i=1;i<8;i++) bass+=freq[i]; bass/=7*255;
+  let ci=-1; for(let i=0;i<list.length;i++) if(t>=list[i].t-0.25) ci=i;
+  const s={tp:t/dur,bass,accent:accentIn.value,list,ci,L:null};
+  if(ci>=0){ const L=list[ci];
+    if(t<=L.end+0.3){ s.L=L; s.N=list[ci+1]; s.p=demo?0.55:progress(L,t);
+      s.k=ease((t-L.t+0.25)/0.35)*(t>L.end?1-ease((t-L.end)/0.3):1); }
+    s.p=s.p??1;
+  }
+  R[theme](t,s);
+  ctx.fillStyle='rgba(255,255,255,.15)'; ctx.fillRect(0,H-5,W,5);
+  ctx.fillStyle=accentIn.value; ctx.fillRect(0,H-5,W*clamp(t/dur),5);
+}
+function redraw(){ const demo=!lines.length; draw(demo?2.2:player.currentTime,demo); }
+let raf=null;
+function loop(){ cancelAnimationFrame(raf); const f=()=>{ draw(player.currentTime,!lines.length); if(!player.paused||syncing) raf=requestAnimationFrame(f); }; f(); }
+player.addEventListener('play',loop);
+player.addEventListener('seeked',redraw);
+player.addEventListener('loadedmetadata',()=>{parse();redraw();});
 
-<footer>
-  <div class="shell" id="footerShell">
-    <div class="cols">
-      <div>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
-          <svg class="crest" style="width:52px;height:52px"><use href="#crest"></use></svg>
-          <div>
-            <h4 style="margin:0">Global Vision Public School</h4>
-            <span style="font-size:.8rem">सीखो, प्रेरित करो, हासिल करो · Learn, Inspire, Achieve</span>
-          </div>
-        </div>
-        <p style="font-size:.88rem;max-width:34ch">Plot 14, Sector 9, Rohini, New Delhi – 110085. Office open Monday to Saturday, 8:00 AM to 3:00 PM.</p>
-        <p style="font-size:.88rem;margin:0">Affiliated to CBSE · Affiliation No. 2730456 · School Code 27301</p>
-      </div>
-      <div>
-        <h4>For parents</h4>
-        <a href="#/admission">Apply for admission</a>
-        <a href="#/track">Track an application</a>
-        <a href="#/attendance">Check attendance</a>
-        <a href="#/homework">Homework</a>
-        <a href="#/fees">Fee structure</a>
-        <a href="#/login">Parent login</a>
-      </div>
-      <div>
-        <h4>Academics</h4>
-        <a href="#/academics">Academic structure</a>
-        <a href="#/subjects">Subjects</a>
-        <a href="#/timetable">Class timetable</a>
-        <a href="#/material">Study material</a>
-        <a href="#/exams">Exams and results</a>
-        <a href="#/calendar">Academic calendar</a>
-      </div>
-      <div>
-        <h4>School</h4>
-        <a href="#/vision">Vision and mission</a>
-        <a href="#/campus">Campus</a>
-        <a href="#/news">News</a>
-        <a href="#/disclosure">Mandatory public disclosure</a>
-        <a href="#/downloads">Downloads</a>
-        <a href="#/privacy">Privacy policy</a>
-        <a href="#/sitemap">Sitemap</a>
-      </div>
-    </div>
-    <div class="copy">
-      <span>© 2026 Global Vision Public School. All records shown are sample data.</span>
-      <span id="dataMode">Running on local sample data</span>
-    </div>
-  </div>
-</footer>
+/* ================= PREVIEW / RECORD ================= */
+document.getElementById('previewBtn').onclick=()=>{
+  if(!player.src){setStatus('Song daaliye.');return;}
+  if(!parse()){setStatus('Lyrics mein timing nahi mili — Auto Sync ya Tap Sync use karein.');return;}
+  ensureAudio(); audioCtx.resume(); player.currentTime=0; player.play();
+};
+document.getElementById('recBtn').onclick=async()=>{
+  if(!player.src||!bgImg){setStatus('Song aur image dono daaliye.');return;}
+  if(!parse()){setStatus('Lyrics mein timing nahi mili — Auto Sync ya Tap Sync use karein.');return;}
+  ensureAudio(); await audioCtx.resume();
+  const stream=new MediaStream([...cv.captureStream(30).getVideoTracks(),...dest.stream.getAudioTracks()]);
+  const types=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'];
+  const mime=types.find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||'';
+  recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8e6});
+  chunks=[]; recorder.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  recorder.onstop=()=>{
+    const ext=mime.includes('mp4')?'mp4':'webm', blob=new Blob(chunks,{type:mime||'video/webm'});
+    const name=(audioFile?audioFile.name.replace(/\.[^.]+$/,''):'lyrical-video')+'-'+theme+'.'+ext;
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setStatus(`Video ready! ${name} download ho gayi.`+(ext==='webm'?' (MP4 ke liye latest Chrome/Edge use karein.)':''));
+    document.getElementById('stopBtn').disabled=true;
+  };
+  player.currentTime=0; recorder.start(1000); player.play();
+  document.getElementById('stopBtn').disabled=false;
+  setStatus('Recording… poora gaana real-time mein chalega. Is tab ko open aur saamne rakhein.');
+};
+document.getElementById('stopBtn').onclick=()=>{ if(syncing) finishSync(); player.pause(); if(recorder&&recorder.state==='recording') recorder.stop(); };
 
-<a class="wa" id="waBtn" href="#" target="_blank" rel="noopener" aria-label="WhatsApp admission enquiry">
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
-    <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5 0a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5s-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3A2.9 2.9 0 0 0 6.8 12a5.1 5.1 0 0 0 1 2.4 11.6 11.6 0 0 0 4.5 4 5.2 5.2 0 0 0 3.1.5 2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/>
-  </svg>
-  <span>Admission enquiry</span>
-</a>
-
-<div class="modal" id="modal" role="dialog" aria-modal="true">
-  <div class="box">
-    <div class="mh"><h3 id="modalTitle">Details</h3>
-      <button class="x" id="modalClose" aria-label="Close">✕</button></div>
-    <div class="mb" id="modalBody"></div>
-  </div>
-</div>
-
-<div class="searchwrap" id="searchWrap">
-  <div class="searchbox">
-    <div class="searchtop">
-      <input id="searchInput" placeholder="Search admissions, fees, notices, downloads, faculty…" autocomplete="off">
-      <button class="x" id="searchClose" aria-label="Close search">✕</button>
-    </div>
-    <div id="searchOut"></div>
-  </div>
-</div>
-
-<div id="toast" role="status"></div>
-
-<script src="assets/config.js"></script>
-<script src="assets/seed.js"></script>
-<script src="assets/seed-extra.js"></script>
-<script src="assets/i18n.js"></script>
-<script src="assets/api.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/pages-academics.js"></script>
-<script src="assets/pages-school.js"></script>
-<script src="assets/pages-info.js"></script>
-<script src="assets/pages-portal.js"></script>
-<script>App.start();</script>
+document.fonts&&document.fonts.ready.then(redraw);
+['900 40px Poppins','400 40px "Bebas Neue"','italic 600 40px "Playfair Display"'].forEach(f=>document.fonts&&document.fonts.load(f).then(redraw).catch(()=>{}));
+redraw();
+</script>
 </body>
 </html>
